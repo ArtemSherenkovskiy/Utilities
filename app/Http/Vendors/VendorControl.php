@@ -16,11 +16,31 @@ class VendorControl
 {
     public static function generate($id)
     {
-        $dbAnswer = DB::select('SELECT * FROM vendors WHERE id = ?', [$id]);
-        $className = ((array) $dbAnswer[0]);
-        $vendorName = 'App\Http\Vendors\\'.$className['name'];
-        $bv = new $vendorName;
-        return $bv->layout();
+        if(null == $id)
+        {
+            $dbAnswer = DB::select('SELECT * FROM vendors');
+            var_dump($dbAnswer);
+            $answer = "";
+            foreach($dbAnswer as $dbRow)
+            {
+                //need to create links
+            }
+        }
+        else
+        {
+            $dbAnswer = DB::select('SELECT * FROM vendors WHERE id = ?', [$id]);
+            if(count($dbAnswer) > 0)
+            {
+                $arrFromDbAnswer = ((array)$dbAnswer[0]);
+                $vendorName = 'App\Http\Vendors\\' . $arrFromDbAnswer['name'];
+                $bv = new $vendorName;
+                return $bv->layout();
+            }
+            else
+            {
+                return view('errorVendor');
+            }
+        }
 
 
     }

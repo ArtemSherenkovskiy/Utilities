@@ -24,7 +24,6 @@ Route::get('/', [/*'middleware' => 'auth' ,*/ function () {
 
 Route::get('/vendor/{id?}', function($id = null)
 {
-    var_dump("in routes");
     $vC = new Vendors\VendorControl();
     return $vC->generate($id);
 

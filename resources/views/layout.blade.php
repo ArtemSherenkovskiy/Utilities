@@ -3,6 +3,7 @@
     <head>
         <meta charset="UTF-8">
         <title>Pizda</title>
+        @section('links')
     </head>
     <body>
 

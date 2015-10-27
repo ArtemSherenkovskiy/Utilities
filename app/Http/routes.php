@@ -1,5 +1,8 @@
 <?php
 
+use App\Http;
+use App\Http\Vendors;
+include 'Vendors\VendorControl.php';
 /*
 |--------------------------------------------------------------------------
 | Application Routes
@@ -19,6 +22,14 @@ Route::get('/', [/*'middleware' => 'auth' ,*/ function () {
     return view('welcome');
 }]);
 
+Route::get('/vendor/{id?}', function($id = null)
+{
+    var_dump("in routes");
+    $vC = new Vendors\VendorControl();
+    return $vC->generate($id);
+
+});
+
 // Authentication routes...
 Route::get('auth/login', ['as'=>'login','uses'=>'Auth\AuthController@getLogin']);
 Route::post('auth/login', 'Auth\AuthController@postLogin');
@@ -29,4 +40,5 @@ Route::get('auth/register', ['as'=>'register','uses'=>'Auth\AuthController@getRe
 Route::post('auth/register', 'Auth\AuthController@postRegister');
 
 Route::resource('home','HomeController');
+
 

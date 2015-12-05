@@ -1,8 +1,8 @@
 <?php
 
 use App\Http;
-use App\Http\Vendors;
-include 'Vendors\VendorControl.php';
+use App\Http\Services;
+
 /*
 |--------------------------------------------------------------------------
 | Application Routes
@@ -22,9 +22,9 @@ Route::get('/', [/*'middleware' => 'auth' ,*/ function () {
     return view('welcome');
 }]);
 
-Route::get('/vendor/{id?}', function($id = null)
+Route::get('/service/{id?}', function($id = null)
 {
-    $vC = new Vendors\VendorControl();
+    $vC = new Http\Services\ServiceControl();
     return $vC->generate($id);
 
 });

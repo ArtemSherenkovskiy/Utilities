@@ -1,18 +1,19 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/html">
     <head>
         <meta charset="UTF-8">
         <title>Raschet</title>
-        <script src="/js/jquery-2.1.3.min.js"></script>
+        <script src="/script/jquery-2.1.3.min.js"></script>
        <link rel="stylesheet" href="semantic/semantic.css">
         <link rel="stylesheet" href="css/style.css">
-       <link rel="script" href="semantic/semantic.js"
+       <script src="/semantic/semantic.js"></script>
+       <script src="/script/scripts.js"></script>
 
     </head>
     <body>
 
         {{--header--}}
-        <div class="header">
+        <div class="ui sticky">
        <div class="ui inverted labeled attached large menu">
          <div class="ui container">
         <div class="header item" id="logo">

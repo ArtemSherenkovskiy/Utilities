@@ -54,10 +54,10 @@ return [
 
         'mysql' => [
             'driver'    => 'mysql',
-            'host'      => 'localhost:3306',
-            'database'  => 'utilities',
-            'username'  => 'root',
-            'password'  => 'vjnjwbrk2000',
+            'host'      => 'db4free.net:3306',
+            'database'  => 'rasschet',
+            'username'  => 'bartonu4',
+            'password'  => 'umaTeS',
             'charset'   => 'utf8',
             'collation' => 'utf8_unicode_ci',
             'prefix'    => '',

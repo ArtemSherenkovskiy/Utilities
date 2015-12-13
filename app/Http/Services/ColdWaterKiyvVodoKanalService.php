@@ -2,21 +2,14 @@
 /**
  * Created by IntelliJ IDEA.
  * User: Artem
- * Date: 07.12.2015
- * Time: 11:55
+ * Date: 10.12.2015
+ * Time: 23:44
  */
 
 namespace App\Http\Services;
 
-class HotWaterKiyvEnergoUserInfo
+class ColdWaterKiyvVodoKanalUserInfo
 {
-    /**
-     * @var
-     * true if you have dryer for towel
-     * false otherwise
-     */
-    public $dryer;
-
     /**
      * @var
      * float between 0.0 and 1.0,
@@ -33,20 +26,17 @@ class HotWaterKiyvEnergoUserInfo
 
     public function __construct()
     {
-        $this->dryer = true;
         $this->relief = 0.0;
         $this->numOfReliefHotWater = 0.0;
     }
-    public function __construct1($dryer, $relief, $numOfReliefHotWater)
+    public function __construct1($relief, $numOfReliefHotWater)
     {
-        $this->dryer = $dryer;
         $this->relief = $relief;
         $this->numOfReliefHotWater = $numOfReliefHotWater;
     }
-
 }
 
-class HotWaterKiyvEnergoMonthInfo
+class ColdWaterKiyvVodoKanalMonthInfo
 {
     /**
      * @var
@@ -77,31 +67,21 @@ class HotWaterKiyvEnergoMonthInfo
         $this->counter_value = $counter_value;
         $this->paid_value = $paid_value;
     }
-
-
 }
 
-class HotWaterKiyvEnergoService extends BasicService
+class ColdWaterKiyvVodoKanalService extends BasicService
 {
-    const SERVICE_ALIAS = "HotWater";
-    const SERVICE_NAME = "Горячее водоснабжение";
-    const VENDOR_ALIAS = "KiyvEnergo";
-    const VENDOR_NAME = "КиевЭнерго";
+    const SERVICE_ALIAS = "ColdWater";
+    const SERVICE_NAME = "Холодное водоснабжение и водоотвод";
+    const VENDOR_ALIAS = "KiyvVodoKanal";
+    const VENDOR_NAME = "КиевВодоКанал";
 
-    const COST_WITH_DRYER = 40.92;
-    const COST_WITHOUT_DRYER = 37.91;
+    const COST_OUTGOING = 4.092;
+    const COST_WATER = 4.596;
+    const COST_WATER_WITH_OUTGOING = self::COST_OUTGOING + self::COST_WATER;
+
 
     private $user_info;
-
-    public function __construct()
-    {
-        $this->user_info = new HotWaterKiyvEnergoUserInfo();
-    }
-
-    public function __construct1(HotWaterKiyvEnergoUserInfo $userInfo)
-    {
-        $this->user_info = $userInfo;
-    }
 
     public function layout()
     {
@@ -118,33 +98,34 @@ class HotWaterKiyvEnergoService extends BasicService
         // TODO: Implement create_user_info() method.
     }
 
+
     /**
      * @param $info_array
      * the first element is counter value of previous month
      * the second value is counter value of current month
+     * the third parameter is amount of hot water consumed this month
      * @return int
      */
     public function calculate($info_array)
     {
-        if($info_array[0] && $info_array[1] && $info_array[0] = (int)$info_array[0] && $info_array[1] = (int)$info_array[1])
+        if($info_array[0] && $info_array[1] && $info_array[2] && $info_array[0] = (int)$info_array[0] && $info_array[1] = (int)$info_array[1])
         {
             $diff = $info_array[1] - $info_array[0] - $this->user_info->numOfReliefHotWater * $this->user_info->relief;
             $cost = 0.0;
             if($this->user_info->dryer)
             {
-                $cost = $diff * self::COST_WITH_DRYER;
+                $cost = $diff * self::COST_WATER_WITH_OUTGOING;
             }
             else
             {
-                $cost = $diff * self::COST_WITHOUT_DRYER;
+                $cost = $diff * self::COST_WATER_WITH_OUTGOING;
             }
-            return $cost;
+            return $cost + (int)$info_array[2] * self::COST_OUTGOING;
         }
         else
         {
             return -1;
         }
     }
-
 
 }

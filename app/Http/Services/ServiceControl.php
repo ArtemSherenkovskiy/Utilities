@@ -8,21 +8,22 @@
 
 namespace App\Http\Services;
 use DB;
+use App\Service;
 
 
 
 class ServiceControl
 {
+
     public static function generate($id)
     {
+
         if(null == $id)
         {
-            $dbAnswer = DB::select('SELECT * FROM services');
-            var_dump($dbAnswer);
-
-            while($sqlAnswerRow = mysql_fetch_assoc($dbAnswer))
+            $services = Service::get();
+            foreach($services as $service)
             {
-
+                echo $service->service_name . PHP_EOL;
             }
         }
         else

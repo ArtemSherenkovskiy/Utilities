@@ -13,6 +13,7 @@ class History extends Model
      */
     protected $table = 'history';
 
+    public $timestamps = false;
     /**
      * The attributes that are mass assignable.
      *

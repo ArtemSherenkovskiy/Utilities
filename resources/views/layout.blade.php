@@ -15,23 +15,37 @@
         {{--header--}}
         <div class="ui sticky">
        <div class="ui inverted labeled attached large menu">
-         <div class="ui container">
+
         <div class="header item" id="logo">
           <i class="calculator icon"></i>Расчет
           </div>
+          @if(\Auth::guest())
            <a class="item">
              <i class="home icon"></i> Возможности
            </a>
-           <a class="item">
+           <a class="button item">
              <i class="grid layout icon"></i> Услуги
            </a>
            <a class="red item">
              <i class="info icon"></i> О нас
            </a>
+           @else
+           <a class="ui animated button item" ><div class="hidden content"></div>
+             <div class="visible content"><i class="edit icon"></i>Личный кабинет
+                       </div>
+            </a>
+            <a class="ui animated button item" ><div class="hidden content"></div>
+             <div class="visible content"><i class=" icon"></i>Сервисы
+                       </div>
+            </a>
 
-           </div>
+            <a href="{{route('logout')}}" class="ui right item button">Выйти</a>
+
+           @endif
+
            <div class="right item">
-             <div class="ui input"><input type="text" placeholder="Search..."></div>
+             <div class="ui input"><input type="text" placeholder="Поиск"></div>
+
            </div>
          </div>
        </div>

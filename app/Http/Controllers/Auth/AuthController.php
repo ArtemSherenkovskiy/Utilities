@@ -41,7 +41,8 @@ class AuthController extends Controller
      */
     protected function validator(array $data)
     {
-        return Validator::make($data, [
+    \Log::error($data);
+        $validator = Validator::make($data, [
 
             'email' => 'required|email|max:30|unique:users',
             'password' => 'required|confirmed|min:6',
@@ -50,6 +51,8 @@ class AuthController extends Controller
             'num_of_people' =>'numeric',
             'flat_square' => 'numeric'
         ]);
+        \Log::error($validator->failed());
+        return $validator;
     }
 
     /**

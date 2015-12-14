@@ -3,11 +3,11 @@
     <head>
         <meta charset="UTF-8">
         <title>Raschet</title>
-        <script src="/script/jquery-2.1.3.min.js"></script>
+        <script src="script/jquery-2.1.3.min.js"></script>
        <link rel="stylesheet" href="semantic/semantic.css">
         <link rel="stylesheet" href="css/style.css">
-       <script src="/semantic/semantic.js"></script>
-       <script src="/script/scripts.js"></script>
+       <script src="semantic/semantic.js"></script>
+       <script src="script/scripts.js"></script>
 
     </head>
     <body>

@@ -21,7 +21,7 @@ trait AuthenticatesUsers
             return view('auth.authenticate');
         }
 
-        return view('auth.login');
+        return view('register-modal');
     }
 
     /**
@@ -32,6 +32,7 @@ trait AuthenticatesUsers
      */
     public function postLogin(Request $request)
     {
+        Log:error("try to login ".$request);
         $this->validate($request, [
             $this->loginUsername() => 'required', 'password' => 'required',
         ]);
@@ -137,7 +138,7 @@ trait AuthenticatesUsers
      */
     public function loginUsername()
     {
-        return property_exists($this, 'username') ? $this->username : 'email';
+        return  $this->username  ='email';
     }
 
     /**

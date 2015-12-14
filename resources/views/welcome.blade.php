@@ -13,11 +13,11 @@
  </div>
  <div class="eight wide column">
 <div class="ui segment">
-<form class="ui form" method="post" action="auth/login ">
+<form class="ui form" method="post" action="{{route('loginPost')}}">
   <div class="field">
     <label>Username</label>
             <div class="ui left icon input">
-              <input type="text" name="username" placeholder="Username">
+              <input type="email" name="email" placeholder="email">
               <i class="user icon"></i>
   </div>
   </div>

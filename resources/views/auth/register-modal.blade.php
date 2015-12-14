@@ -5,7 +5,7 @@
         <div class="content">
 
            <div class="ui segment">
-               <form class="ui form" method="post" action="auth/register">
+               <form class="ui form" method="post" action="{{route('register')}}">
                    {!! csrf_field() !!}
                    <div class="two fields">
                        <div class="field">
@@ -27,16 +27,16 @@
                    </div>
                    <div class="field">
                        <label>Подтверждение пароля</label>
-                       <input type="password" name="confirm_password">
+                       <input type="password" name="password_confirmation">
                    </div>
                     <div class="ui horizontal divider">Необезательное</div>
                    <div class="field">
                        <label>Количество проживающих в квартире</label>
-                       <input type="text" name="num_of_people">
+                       <input type="number" name="num_of_people">
                    </div>
                    <div class="field">
                        <label>Площадь квартиры</label>
-                       <input type="text" name="flat_square">
+                       <input type="number" name="flat_square">
                    </div>
                    <button type="submit" class="ui button">Продолжить</button>
                </form>

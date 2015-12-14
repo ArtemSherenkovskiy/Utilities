@@ -18,7 +18,7 @@ Route::get('/a', function () {
     return "edd";
 });
 
-Route::get('/', [/*'middleware' => 'auth' ,*/ function () {
+Route::get('/', ['middleware' => 'auth' , function () {
     return view('auth/register-modal');
 }]);
 
@@ -31,7 +31,7 @@ Route::get('/service/{id?}', function($id = null)
 
 // Authentication routes...
 Route::get('auth/login', ['as'=>'login','uses'=>'Auth\AuthController@getLogin']);
-Route::post('auth/login', 'Auth\AuthController@postLogin');
+Route::post('auth/login', ['as'=>'loginPost','uses'=>'Auth\AuthController@postLogin']);
 Route::get('auth/logout', 'Auth\AuthController@getLogout');
 
 // Registration routes...

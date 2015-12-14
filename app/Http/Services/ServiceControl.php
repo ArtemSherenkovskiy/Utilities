@@ -20,7 +20,7 @@ class ServiceControl
 
         if(null == $id)
         {
-            $services = Service::get();
+                $services = Service::get();
             foreach($services as $service)
             {
                 echo $service->service_name . PHP_EOL;

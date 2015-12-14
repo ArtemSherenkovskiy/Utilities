@@ -13,6 +13,8 @@ class UserService extends Model
      */
     protected $table = 'user_service';
 
+    protected $primaryKey = ['user_id', 'service_id'];
+
     public $timestamps = false;
     /**
      * The attributes that are mass assignable.

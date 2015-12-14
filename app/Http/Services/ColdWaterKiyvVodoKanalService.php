@@ -8,6 +8,13 @@
 
 namespace App\Http\Services;
 
+use App\UserService;
+use App\History;
+use App\Service;
+use App\User;
+
+use DB;
+
 class ColdWaterKiyvVodoKanalUserInfo
 {
     /**
@@ -81,7 +88,16 @@ class ColdWaterKiyvVodoKanalService extends BasicService
     const COST_WATER_WITH_OUTGOING = self::COST_OUTGOING + self::COST_WATER;
 
 
+    private $user_service;
     private $user_info;
+
+
+    public function __construct($service_id)
+    {
+        $this->user_service = UserService::find([Auth::user()->id, $service_id]);
+        $this->user_info = unserialize($this->user_service->user_info);
+    }
+
 
     public function layout()
     {
@@ -126,6 +142,15 @@ class ColdWaterKiyvVodoKanalService extends BasicService
         {
             return -1;
         }
+    }
+
+
+    private function hot_water_outgoing()
+    {
+        $time = strtotime(date('Y-m-01 00:00:00'));
+        $user_id = Auth::user()->id;
+        //$hot_water_id = DB::select("SELECT user_service.id FROM user_service LEFT JOIN services ON user_service.service_id = services.id WHERE services.service_alias = 'HotWater' AND user_service.user_id = $user_id");
+        //$history_item = History::find([$this->user_service->id, $time]);
     }
 
 }

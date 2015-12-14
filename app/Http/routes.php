@@ -19,7 +19,7 @@ Route::get('/a', function () {
 });
 
 Route::get('/', [/*'middleware' => 'auth' ,*/ function () {
-    return view('welcome');
+    return view('auth/register-modal');
 }]);
 
 Route::get('/service/{id?}', function($id = null)

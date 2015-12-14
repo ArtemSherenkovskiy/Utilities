@@ -8,6 +8,10 @@
 
 namespace App\Http\Services;
 
+use App\User;
+use App\UserService;
+use DB;
+
 class HotWaterKiyvEnergoUserInfo
 {
     /**
@@ -83,25 +87,26 @@ class HotWaterKiyvEnergoMonthInfo
 
 class HotWaterKiyvEnergoService extends BasicService
 {
-    const SERVICE_ALIAS = "HotWater";
-    const SERVICE_NAME = "Горячее водоснабжение";
-    const VENDOR_ALIAS = "KiyvEnergo";
-    const VENDOR_NAME = "КиевЭнерго";
+    const SERVICE_ID = 2;
 
     const COST_WITH_DRYER = 40.92;
     const COST_WITHOUT_DRYER = 37.91;
 
+    private $user_service;
     private $user_info;
+
 
     public function __construct()
     {
-        $this->user_info = new HotWaterKiyvEnergoUserInfo();
+
     }
 
-    public function __construct1(HotWaterKiyvEnergoUserInfo $userInfo)
+    public function __construct1($service_id)
     {
-        $this->user_info = $userInfo;
+        $this->user_service = UserService::find([Auth::user()->id,$service_id]);
+        $this->user_info = unserialize($this->user_service->user_info);
     }
+
 
     public function layout()
     {
@@ -115,7 +120,12 @@ class HotWaterKiyvEnergoService extends BasicService
 
     public function create_user_info()
     {
-        // TODO: Implement create_user_info() method.
+        $this->user_info = new HotWaterKiyvEnergoUserInfo();
+        $this->user_info->dryer = true;
+        $this->user_info->relief = 0.5;
+        $this->user_info->numOfReliefHotWater = 5;
+        DB::insert("INSERT INTO user_service (user_id, service_id, user_info) VALUES(?,?,?) ", []);
+
     }
 
     /**

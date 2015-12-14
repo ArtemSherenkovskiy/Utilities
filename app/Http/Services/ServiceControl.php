@@ -8,6 +8,7 @@
 
 namespace App\Http\Services;
 use DB;
+use Illuminate\Support\Facades\Auth;
 use App\Service;
 
 
@@ -20,11 +21,25 @@ class ServiceControl
 
         if(null == $id)
         {
-                $services = Service::get();
+            $output = array();
+            $services = DB::table('services')->groupBy('service_name')->get();
             foreach($services as $service)
             {
-                echo $service->service_name . PHP_EOL;
+                $vendors = DB::table("services")
+                    ->leftJoin("vendors", "services.vendor_id", "=", "vendors.id")
+                    ->select("vendors.vendor_name")
+                    ->where("services.service_alias", "=", $service->service_alias  )
+                    ->get();
+                $vendor_name = array();
+                foreach($vendors as $vendor)
+                {
+
+                    array_push($vendor_name, $vendor->vendor_name);
+                }
+                $output[$service->service_name] = $vendor_name;
+
             }
+            var_dump(serialize($output));
         }
         else
         {
@@ -32,9 +47,9 @@ class ServiceControl
             if(count($dbAnswer) > 0)
             {
                 $arrFromDbAnswer = ((array)$dbAnswer[0]);
-                var_dump($arrFromDbAnswer);
                 $vendorName = 'App\Http\Services\\' . $arrFromDbAnswer['service_alias']. $arrFromDbAnswer['vendor_alias'] . 'Service';
-                $bv = new $vendorName;
+                $bv = new $vendorName($id);
+                $bv->create_user_info();
                 return $bv->calculate(array(0,160));
 
             }

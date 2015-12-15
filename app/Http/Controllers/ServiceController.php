@@ -9,6 +9,7 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Service;
 use App\Vendor;
+use App\Http\Services;
 class ServiceController extends Controller
 {
     /**
@@ -24,7 +25,8 @@ class ServiceController extends Controller
         $services =  Service::all();
         $vendors = Vendor::all();
         \Log::error($vendors);
-        return view('services/services')->with(['services'=>$services,'vendors'=>$vendors]);
+       return view('services/services')->with(['services'=>$services,'vendors'=>$vendors]);
+
     }
 
     /**
@@ -35,8 +37,15 @@ class ServiceController extends Controller
     public function create()
     {
         //
+
     }
 
+    public function getService($id=null)
+    {
+        $vC = new  Services\ServiceControl();
+        //return $vC->generate($id);
+        return view('services.createservice')->with(['services'=>$id]);
+    }
     /**
      * Store a newly created resource in storage.
      *

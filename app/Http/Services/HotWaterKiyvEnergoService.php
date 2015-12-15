@@ -8,6 +8,7 @@
 
 namespace App\Http\Services;
 
+use App\Service;
 use App\User;
 use App\UserService;
 use DB;
@@ -110,7 +111,14 @@ class HotWaterKiyvEnergoService extends BasicService
 
     public function layout()
     {
-        // TODO: Implement layout() method.
+        $answer = '<div>';
+        $answer .= "\n" . '<div class="inline field">'
+            . "\n" . '<div class="ui slider checkbox">'
+            . "\n" . '<input type="checkbox" tabindex="0" class="hidden">'
+            . "\n" . '<label>' . "Я проживаю в городе или ПГТ." . '</label>'
+            . "\n" . '</div>'
+            . "\n" . '</div>';
+        return view('services/create_service')->with(['services' => Service::groupBy('service_alias')]);
     }
 
     public function info()

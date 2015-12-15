@@ -49,8 +49,8 @@ class ServiceControl
                 $arrFromDbAnswer = ((array)$dbAnswer[0]);
                 $vendorName = 'App\Http\Services\\' . $arrFromDbAnswer['service_alias']. $arrFromDbAnswer['vendor_alias'] . 'Service';
                 $bv = new $vendorName($id);
-                $bv->create_user_info();
-                return $bv->calculate(array(0,160));
+                //$bv->create_user_info();
+                return $bv->layout();
 
             }
             else

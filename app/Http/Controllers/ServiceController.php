@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\History;
+use App\UserService;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
-
+use App\Service;
+use App\Vendor;
 class ServiceController extends Controller
 {
     /**
@@ -15,8 +18,13 @@ class ServiceController extends Controller
      */
     public function index()
     {
+        //$userServices = UserService::where('user_id',\Auth::user()->id)->get();
         //
-        return view('services/services');
+        //\Log::error($userServices);
+        $services =  Service::all();
+        $vendors = Vendor::all();
+        \Log::error($vendors);
+        return view('services/services')->with(['services'=>$services,'vendors'=>$vendors]);
     }
 
     /**

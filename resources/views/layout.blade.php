@@ -30,12 +30,12 @@
              <i class="info icon"></i> О нас
            </a>
            @else
-           <a class="ui animated button item" ><div class="hidden content"></div>
-             <div class="visible content"><i class="edit icon"></i>Личный кабинет
+           <a class="ui animated button item" ><div class="hidden content"><i class="edit icon"></i></div>
+             <div class="visible content">Личный кабинет
                        </div>
             </a>
-            <a class="ui animated button item" ><div class="hidden content"></div>
-             <div class="visible content"><i class=" icon"></i>Сервисы
+            <a class="ui animated button item" ><div class="hidden content"><i class="grid layout icon"></i></div>
+             <div class="visible content">Сервисы
                        </div>
             </a>
 

@@ -25,8 +25,9 @@
     <label>Password</label>
     <input type="password" name="password" placeholder="Password">
   </div>
-
-
+    @if(session('errors'))
+   <div class="ui red message">{{session('errors')}}</div>
+   @endif
  <input type="hidden" name="_token" value="{{ csrf_token() }}">
     <div class="ui grid container"> <div class="centered row">
             <button class="ui button" type="submit">Submit</button>

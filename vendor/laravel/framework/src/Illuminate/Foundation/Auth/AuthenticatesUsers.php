@@ -21,7 +21,7 @@ trait AuthenticatesUsers
             return view('auth.authenticate');
         }
 
-        return view('register-modal');
+       // return redirect('/');
     }
 
     /**
@@ -32,7 +32,7 @@ trait AuthenticatesUsers
      */
     public function postLogin(Request $request)
     {
-        Log:error("try to login ".$request);
+        \Log::error("try to login ".$request);
         $this->validate($request, [
             $this->loginUsername() => 'required', 'password' => 'required',
         ]);
@@ -61,8 +61,8 @@ trait AuthenticatesUsers
 
         return redirect($this->loginPath())
             ->withInput($request->only($this->loginUsername(), 'remember'))
-            ->withErrors([
-                $this->loginUsername() => $this->getFailedLoginMessage(),
+            ->with([
+                'errors'=> $this->getFailedLoginMessage(),
             ]);
     }
 
@@ -106,7 +106,7 @@ trait AuthenticatesUsers
     {
         return Lang::has('auth.failed')
                 ? Lang::get('auth.failed')
-                : 'These credentials do not match our records.';
+                : 'Неправильно введены логин пароль';
     }
 
     /**
@@ -128,7 +128,7 @@ trait AuthenticatesUsers
      */
     public function loginPath()
     {
-        return property_exists($this, 'loginPath') ? $this->loginPath : '/auth/login';
+        return property_exists($this, 'loginPath') ? $this->loginPath : '/';
     }
 
     /**

@@ -91,9 +91,9 @@ class HeatingKiyvEnergoService extends BasicService
 {
 
     const SERVICE_ALIAS = "Electricity";
-    const SERVICE_NAME = "��������������";
+    const SERVICE_NAME = "Электроэнергия";
     const VENDOR_ALIAS = "KiyvEnergo";
-    const VENDOR_NAME = "����������";
+    const VENDOR_NAME = "КиевЭнерго";
 
 
     const COST_SQUARE = 16.14;
@@ -117,7 +117,19 @@ class HeatingKiyvEnergoService extends BasicService
 
     public function layout()
     {
-        // TODO: Implement layout() method.
+        $answer = '<div class="ui slider checkbox">
+            <input type="checkbox" tabindex="0" class="hidden">
+            <label>У меня дома есть счетчик теплоэнергии.</label>
+            </div>
+            <div class="two fields">
+            <div class="ui input">
+             <input type="text" placeholder="Размер скидки в %">
+             </div>
+            <div class="ui input">
+            <input type="text" placeholder="Льготная площадь или льготные ГигаКалории   ">
+            </div>
+            </div>';
+        return view('services/create_service')->with(['layout'=> $answer]);
     }
 
     public function info()

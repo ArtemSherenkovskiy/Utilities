@@ -12,9 +12,17 @@ use App\Service;
 use App\User;
 use App\UserService;
 use DB;
+use Illuminate\Support\Facades\View;
 
 class HotWaterKiyvEnergoUserInfo
 {
+    /**
+     * @var
+     * true if you have counter
+     * false otherwise
+     */
+    public $counter;
+
     /**
      * @var
      * true if you have dryer for towel
@@ -89,6 +97,7 @@ class HotWaterKiyvEnergoMonthInfo
 class HotWaterKiyvEnergoService extends BasicService
 {
     const SERVICE_ID = 2;
+    const SERVICE_VIEW = 'hotwaterkiyvenergoservice';
 
     const COST_WITH_DRYER = 40.92;
     const COST_WITHOUT_DRYER = 37.91;
@@ -111,14 +120,23 @@ class HotWaterKiyvEnergoService extends BasicService
 
     public function layout()
     {
-        $answer = '<div>';
-        $answer .= "\n" . '<div class="inline field">'
-            . "\n" . '<div class="ui slider checkbox">'
-            . "\n" . '<input type="checkbox" tabindex="0" class="hidden">'
-            . "\n" . '<label>' . "Я проживаю в городе или ПГТ." . '</label>'
-            . "\n" . '</div>'
-            . "\n" . '</div>';
-        return view('services/create_service')->with(['services' => Service::groupBy('service_alias')]);
+        $answer = '<div class="ui slider checkbox">
+            <input type="checkbox" tabindex="0" class="hidden">
+            <label>У меня дома есть счетчик.</label>
+            </div>
+            <div class="ui slider checkbox">
+            <input type="checkbox" tabindex="0" class="hidden">
+            <label>У меня дома есть сушилка для полотенец.</label>
+            </div>
+            <div class="two fields">
+            <div class="ui input">
+             <input type="text" placeholder="Размер скидки в %">
+             </div>
+            <div class="ui input">
+            <input type="text" placeholder="Объем льготной воды в куб.м">
+            </div>
+            </div>';
+        return view('services/create_service')->with(['layout'=> $answer]);
     }
 
     public function info()

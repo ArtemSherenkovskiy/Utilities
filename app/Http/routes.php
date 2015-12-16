@@ -20,7 +20,11 @@ Route::get('/', ['middleware' => 'auth' , function () {
     return view('auth/register-modal');
 }]);
 
+
 Route::get('/service{id?}', 'ServiceController@getService');
+
+
+
 
 // Authentication routes...
 Route::get('auth/login', ['as'=>'login','uses'=>'Auth\AuthController@getLogin']);

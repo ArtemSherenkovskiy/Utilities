@@ -19,6 +19,13 @@ class ColdWaterKiyvVodoKanalUserInfo
 {
     /**
      * @var
+     * true if you have counter
+     * false otherwise
+     */
+    public $counter;
+
+    /**
+     * @var
      * float between 0.0 and 1.0,
      * this value describe discount for this vendor
      */
@@ -92,16 +99,27 @@ class ColdWaterKiyvVodoKanalService extends BasicService
     private $user_info;
 
 
-    public function __construct($service_id)
+    public function __construct()
     {
-        $this->user_service = UserService::find([Auth::user()->id, $service_id]);
-        $this->user_info = unserialize($this->user_service->user_info);
+
     }
 
 
     public function layout()
     {
-        // TODO: Implement layout() method.
+        $answer = '<div class="ui slider checkbox">
+            <input type="checkbox" tabindex="0" class="hidden">
+            <label>У меня дома есть счетчик.</label>
+            </div>
+            <div class="two fields">
+            <div class="ui input">
+             <input type="text" placeholder="Размер скидки в %">
+             </div>
+            <div class="ui input">
+            <input type="text" placeholder="Объем льготной воды в куб.м">
+            </div>
+            </div>';
+        return view('services/create_service')->with(['layout'=> $answer]);
     }
 
     public function info()

@@ -107,9 +107,11 @@ class ColdWaterKiyvVodoKanalService extends BasicService
 
     public function layout()
     {
-        $answer = '<div class="ui slider checkbox">
+        $answer = '<div class="inline field">
+            <div class="ui slider checkbox">
             <input type="checkbox" tabindex="0" class="hidden">
             <label>У меня дома есть счетчик.</label>
+            </div>
             </div>
             <div class="two fields">
             <div class="ui input">

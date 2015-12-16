@@ -171,33 +171,41 @@ class ElectricityKiyvEnergoService extends BasicService
 
     public function layout()
     {
-        $answer = '<div class="ui slider checkbox">
+        $answer = '<div class="inline field">
+            <div class="ui slider checkbox">
             <input type="checkbox" tabindex="0" class="hidden">
             <label>Я живу в городе или ПГТ.</label>
             </div>
+            </div>
+            <div class="inline field">
             <div class="ui slider checkbox">
             <input type="checkbox" tabindex="0" class="hidden">
             <label>У меня дома электроплита.</label>
             </div>
+            </div>
+            <div class="inline field">
             <div class="ui slider checkbox">
             <input type="checkbox" tabindex="0" class="hidden">
             <label>У меня дома электроотопление/отсутствует центральное отпление.</label>
             </div>
+            </div>
+            <div class="inline field">
             <div class="ui slider checkbox">
             <input type="checkbox" tabindex="0" class="hidden">
             <label>Мы многодетная семья.</label>
             </div>
-            <div class="ui slider checkbox">
-            <input type="checkbox" tabindex="0" class="hidden">
-            <label>У меня дома есть счетчик.</label>
             </div>
+            <div class="inline field">
             <div class="ui slider checkbox">
             <input type="checkbox" tabindex="0" class="hidden">
             <label>Мой дом рассчитывается с энергоснабжающей организацией по общему расчетному прибору учета.</label>
             </div>
+            </div>
+            <div class="inline field">
             <div class="ui slider checkbox">
             <input type="checkbox" tabindex="0" class="hidden">
             <label>Общежитиям (подпадающим под определение «население, которое рассчитывается с энергоснабжающей организацией по общему расчетному прибору учета»)</label>
+            </div>
             </div>
             <div class="two fields">
             <div class="ui input">

@@ -20,7 +20,7 @@ Route::get('/', ['middleware' => 'auth' , function () {
     return view('auth/register-modal');
 }]);
 
-Route::get('/service/{id?}', function($id = null)
+Route::get('/service{id?}', function($id = null)
 {
     $vC = new Http\Services\ServiceControl();
     return $vC->generate($id);

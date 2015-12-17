@@ -20,12 +20,11 @@ Route::get('/', ['middleware' => 'auth' , function () {
     return view('auth/register-modal');
 }]);
 
-Route::get('/service{id?}', function($id = null)
-{
-    $vC = new Http\Services\ServiceControl();
-    return $vC->generate($id);
 
-});
+Route::get('/service{id?}', ['as'=>'service','uses'=>'ServiceController@getService']);
+Route::post('service/save',['as'=>'saveService','uses'=>'ServiceController@store']);
+
+
 
 // Authentication routes...
 Route::get('auth/login', ['as'=>'login','uses'=>'Auth\AuthController@getLogin']);

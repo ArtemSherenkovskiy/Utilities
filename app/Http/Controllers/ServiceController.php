@@ -43,8 +43,8 @@ class ServiceController extends Controller
     public function getService($id=null)
     {
         $vC = new  Services\ServiceControl();
-        //return $vC->generate($id);
-        return view('services.createservice')->with(['services'=>$id]);
+        return $vC->generate($id);
+
     }
     /**
      * Store a newly created resource in storage.
@@ -55,6 +55,8 @@ class ServiceController extends Controller
     public function store(Request $request)
     {
         //
+
+        return $request;
     }
 
     /**

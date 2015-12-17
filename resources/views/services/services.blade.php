@@ -9,18 +9,21 @@
 
         </div>
         <div class="ui modal">
-            <div class="ui container">
-                <div class="ui cards">
+            <div class="ui segment  ">
+                <div class="ui list">
 
                     @foreach($services as $service)
 
-                    <div class="ui card">
+                    <div class="ui item">
                         <div class="content">
                             <div class="header">
                                 {{$service['service_name']}}
                             </div>
                         </div>
                         <div class="description">
+                            <a class="" href="{{route('service',['id'=>App\Vendor::find($service->vendor_id)->id])}}">
+                            {{App\Vendor::find($service->vendor_id)->vendor_name}}
+                            </a>
                             {{App\Vendor::find($service->vendor_id)->description}}
                         </div>
                     </div>

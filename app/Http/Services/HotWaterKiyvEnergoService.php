@@ -211,6 +211,10 @@ class HotWaterKiyvEnergoService extends BasicService
 
     public function create_user_info_view_with_info()
     {
+        if(null === $this->user_service)
+        {
+            throw new ServiceException("Error in HotWaterKiyvEnergo with null user_service variable");
+        }
         $answer = '<div class="inline field">
             <div class="ui slider checkbox">
             <input type="checkbox" name="counter"' . ($this->user_service->counter ? "checked" : "") . '>

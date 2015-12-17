@@ -122,13 +122,13 @@ class HotWaterKiyvEnergoService extends BasicService
     {
         $answer = '<div class="inline field">
             <div class="ui slider checkbox">
-            <input type="checkbox" tabindex="0" class="hidden">
+            <input type="checkbox" name="counter">
             <label>У меня дома есть счетчик.</label>
             </div>
             </div>
             <div class="inline field">
             <div class="ui slider checkbox">
-            <input type="checkbox" tabindex="0" class="hidden">
+            <input type="checkbox" name="dryer">
             <label>У меня дома есть сушилка для полотенец.</label>
             </div>
             </div>

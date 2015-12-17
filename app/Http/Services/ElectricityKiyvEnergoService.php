@@ -172,38 +172,38 @@ class ElectricityKiyvEnergoService extends BasicService
     public function layout()
     {
         $answer = '<div class="inline field">
-            <div class="ui slider checkbox">
-            <input type="checkbox" tabindex="0" class="hidden">
+            <div class="ui checkbox">
+            <input type="checkbox" name="location">
             <label>Я живу в городе или ПГТ.</label>
             </div>
             </div>
             <div class="inline field">
-            <div class="ui slider checkbox">
-            <input type="checkbox" tabindex="0" class="hidden">
+            <div class="ui checkbox">
+            <input type="checkbox" name="electric_cooker">
             <label>У меня дома электроплита.</label>
             </div>
             </div>
             <div class="inline field">
-            <div class="ui slider checkbox">
-            <input type="checkbox" tabindex="0" class="hidden">
+            <div class="ui checkbox">
+            <input type="checkbox" name="heat_supply">
             <label>У меня дома электроотопление/отсутствует центральное отпление.</label>
             </div>
             </div>
             <div class="inline field">
-            <div class="ui slider checkbox">
-            <input type="checkbox" tabindex="0" class="hidden">
+            <div class="ui checkbox">
+            <input type="checkbox" name="child_support">
             <label>Мы многодетная семья.</label>
             </div>
             </div>
             <div class="inline field">
-            <div class="ui slider checkbox">
-            <input type="checkbox" tabindex="0" class="hidden">
+            <div class="ui checkbox">
+            <input type="checkbox" name="common_metric">
             <label>Мой дом рассчитывается с энергоснабжающей организацией по общему расчетному прибору учета.</label>
             </div>
             </div>
             <div class="inline field">
-            <div class="ui slider checkbox">
-            <input type="checkbox" tabindex="0" class="hidden">
+            <div class="ui checkbox">
+            <input type="checkbox" name="common_metric_hostel">
             <label>Общежитиям (подпадающим под определение «население, которое рассчитывается с энергоснабжающей организацией по общему расчетному прибору учета»)</label>
             </div>
             </div>

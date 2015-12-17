@@ -7,6 +7,7 @@
  */
 
 namespace App\Http\Services;
+use App\UserService;
 use DB;
 use Illuminate\Support\Facades\Auth;
 use App\Service;

@@ -107,6 +107,16 @@ class ColdWaterKiyvVodoKanalService extends BasicService
 
     public function layout()
     {
+
+    }
+
+    public function info()
+    {
+        // TODO: Implement info() method.
+    }
+
+    public function create_user_info_view()
+    {
         $answer = '<div class="inline field">
             <div class="ui slider checkbox">
             <input type="checkbox" tabindex="0" name="counter">
@@ -124,14 +134,14 @@ class ColdWaterKiyvVodoKanalService extends BasicService
         return view('services/create_service')->with(['layout'=> $answer]);
     }
 
-    public function info()
+    public function create_user_info_view_with_info()
     {
-        // TODO: Implement info() method.
+        // TODO: Implement create_user_info_view_with_info() method.
     }
 
-    public function create_user_info()
+    public function safe($Request)
     {
-        // TODO: Implement create_user_info() method.
+        // TODO: Implement safe() method.
     }
 
 

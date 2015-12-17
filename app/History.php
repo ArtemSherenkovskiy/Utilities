@@ -13,7 +13,6 @@ class History extends Model
      */
     protected $table = 'history';
 
-    protected $primaryKey = ['user_service_id', 'time_period'];
 
     public $timestamps = false;
     /**

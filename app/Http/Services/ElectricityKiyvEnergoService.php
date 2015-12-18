@@ -169,7 +169,7 @@ class ElectricityKiyvEnergoService extends BasicService
     }
 
 
-    public function layout()
+    public function before_calculate_layout()
     {
 
     }
@@ -233,7 +233,7 @@ class ElectricityKiyvEnergoService extends BasicService
         // TODO: Implement create_user_info_view_with_info() method.
     }
 
-    public function safe($Request)
+    public function safe($request)
     {
         // TODO: Implement safe() method.
     }

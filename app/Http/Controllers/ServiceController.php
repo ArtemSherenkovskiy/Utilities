@@ -56,7 +56,7 @@ class ServiceController extends Controller
     {
         //
 
-        return $request;
+        return $request->input();
     }
 
     /**

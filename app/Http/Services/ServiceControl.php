@@ -7,6 +7,7 @@
  */
 
 namespace App\Http\Services;
+use App\Http\Services\ServiceException;
 use App\UserService;
 use DB;
 use Illuminate\Support\Facades\Auth;
@@ -40,7 +41,7 @@ class ServiceControl
                 $output[$service->service_name] = $vendor_name;
 
             }
-            var_dump(serialize($output));
+            return (serialize($output));
         }
         else
         {
@@ -51,7 +52,7 @@ class ServiceControl
                 $vendorName = 'App\Http\Services\\' . $arrFromDbAnswer['service_alias']. $arrFromDbAnswer['vendor_alias'] . 'Service';
                 $bv = new $vendorName($id);
                 //$bv->create_user_info();
-                return $bv->layout();
+                return $bv->create_user_info_view();
 
             }
             else
@@ -60,6 +61,28 @@ class ServiceControl
             }
         }
 
+
+    }
+
+    public static function save($id, $Request)
+    {
+        if(null === $id)
+        {
+            throw new ServiceException("Error function save null $id");
+        }
+        $dbAnswer = DB::select('SELECT services.service_alias, vendors.vendor_alias FROM services LEFT JOIN vendors ON services.vendor_id = vendors.id WHERE services.id = ?', [$id]);
+        if(count($dbAnswer) > 0)
+        {
+            $arrFromDbAnswer = ((array)$dbAnswer[0]);
+            $vendorName = 'App\Http\Services\\' . $arrFromDbAnswer['service_alias']. $arrFromDbAnswer['vendor_alias'] . 'Service';
+            $bv = new $vendorName($id);
+            return $bv->save($Request);
+
+        }
+        else
+        {
+            throw new ServiceException('Error: unknown service');
+        }
 
     }
 }

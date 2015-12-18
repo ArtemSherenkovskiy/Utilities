@@ -38,6 +38,8 @@ class ColdWaterKiyvVodoKanalUserInfo
      */
     public $numOfReliefHotWater;
 
+
+
     public function __construct()
     {
         $this->relief = 0.0;
@@ -105,7 +107,7 @@ class ColdWaterKiyvVodoKanalService extends BasicService
     }
 
 
-    public function layout()
+    public function before_calculate_layout()
     {
 
     }
@@ -139,7 +141,7 @@ class ColdWaterKiyvVodoKanalService extends BasicService
         // TODO: Implement create_user_info_view_with_info() method.
     }
 
-    public function safe($Request)
+    public function safe($request)
     {
         // TODO: Implement safe() method.
     }

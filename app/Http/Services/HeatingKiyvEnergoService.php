@@ -115,7 +115,7 @@ class HeatingKiyvEnergoService extends BasicService
         $this->user_info = $user_info;
     }
 
-    public function layout()
+    public function before_calculate_layout()
     {
 
     }
@@ -149,7 +149,7 @@ class HeatingKiyvEnergoService extends BasicService
         // TODO: Implement create_user_info_view_with_info() method.
     }
 
-    public function safe($Request)
+    public function safe($request)
     {
         // TODO: Implement safe() method.
     }

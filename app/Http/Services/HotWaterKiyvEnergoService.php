@@ -8,6 +8,7 @@
 
 namespace App\Http\Services;
 
+use App\History;
 use App\Service;
 use App\User;
 use App\UserService;
@@ -112,7 +113,9 @@ class HotWaterKiyvEnergoService extends BasicService
      * which is contains in 'user_service' table
      * in 'user_info' field
      */
-    private $user_service;
+    private $user_service_info;
+
+    private $user_service_id;
 
     /**
      * @var
@@ -138,36 +141,48 @@ class HotWaterKiyvEnergoService extends BasicService
 
     public function __construct()
     {
-        if(Auth::user()->guest())
+        if(Auth::guest())
         {
             $this->guest = true;
-            $this->user_service = null;
+            $this->user_service_info = null;
         }
         else
         {
             $this->guest = false;
             $this->user_info = Auth::user();
             $user_services = UserService::whereRaw('user_id = ? and service_id = ?', [$this->user_info->id, self::SERVICE_ID]);
-            if(count($this->user_service) > 0)
+            if(count($this->user_service_info) > 0)
             {
-                $this->user_service = null;
+                $this->user_service_info = null;
+                $this->user_service_id = 0;
             }
             else
             {
-                $this->user_service = unserialize($user_services[0]->user_info);
+                $this->user_service_info = unserialize($user_services[0]->user_info);
+                $this->user_service_id = $user_services[0]->id;
             }
         }
     }
 
 
 
-    public function layout()
+    public function before_calculate_layout()
     {
-
+        if($this->user_service_info->counter)
+        {
+            $previous_counter = History::where('user_service_id', '=', $this->user_service_id)->max('time_period');
+            $answer = '';
+        }
+        else
+        {
+            $answer = '';
+        }
+        return $answer;
     }
 
     public function info()
     {
+
         // TODO: Implement info() method.
     }
 
@@ -211,28 +226,28 @@ class HotWaterKiyvEnergoService extends BasicService
 
     public function create_user_info_view_with_info()
     {
-        if(null === $this->user_service)
+        if(null === $this->user_service_info)
         {
             throw new ServiceException("Error in HotWaterKiyvEnergo with null user_service variable");
         }
         $answer = '<div class="inline field">
             <div class="ui slider checkbox">
-            <input type="checkbox" name="counter"' . ($this->user_service->counter ? "checked" : "") . '>
+            <input type="checkbox" name="counter"' . ($this->user_service_info->counter ? "checked" : "") . '>
             <label>У меня дома есть счетчик.</label>
             </div>
             </div>
             <div class="inline field">
             <div class="ui slider checkbox">
-            <input type="checkbox" name="dryer"' . ($this->user_service->dryer ? "checked" : "") . '>
+            <input type="checkbox" name="dryer"' . ($this->user_service_info->dryer ? "checked" : "") . '>
             <label>У меня дома есть сушилка для полотенец.</label>
             </div>
             </div>
             <div class="two fields">
             <div class="ui input">
-             <input type="text" placeholder="Размер скидки в %" name="relief" value="' . ($this->user_service->relief) . '">
+             <input type="text" placeholder="Размер скидки в %" name="relief" value="' . ($this->user_service_info->relief) . '">
              </div>
             <div class="ui input">
-            <input type="text" placeholder="Объем льготной воды в куб.м" name="num_of_relief_hot_water" value="' . ($this->user_service->num_of_relief_hot_water) . '">
+            <input type="text" placeholder="Объем льготной воды в куб.м" name="num_of_relief_hot_water" value="' . ($this->user_service_info->num_of_relief_hot_water) . '">
             </div>
             </div>';
         return view('services/create_service')->with(['layout'=> $answer]);
@@ -240,30 +255,37 @@ class HotWaterKiyvEnergoService extends BasicService
 
 
     /**
-     * @param $Request
+     * @param $request
      * array, that contains information which come from answer for layout made with create_user_info_view()
      * or create_user_info_view_with_info() functions
      */
-    public function safe($Request)
+    public function safe($request)
     {
+        $this->validate_info_request($request);
         if(!$this->guest)
         {
-            if(null === $this->user_service)
+            if(null === $this->user_service_info)
             {
-                $this->user_service = new HotWaterKiyvEnergoUserInfo($Request['counter'], $Request['dryer'], $Request['relief'], $Request['num_of_relief_hot_water']);
-                DB::table('user_service')->insert(['user_id' => $this->user_info->id, 'service_id' => self::SERVICE_ID, 'user_info' => serialize($this->user_service)]);
+                $this->user_service_info = new HotWaterKiyvEnergoUserInfo((boolean)$request['counter'], (boolean)$request['dryer'], (integer)$request['relief'], (integer)$request['num_of_relief_hot_water']);
+                $user_service = new UserService();
+                $user_service->user_id = $this->user_info->id;
+                $user_service->service_id = self::SERVICE_ID;
+                $user_service->user_info = serialize($this->user_service_info);
+                $user_service->save();
             }
             else
             {
-                $this->user_service->user_info = serialize($this->user_service);
-                DB::table('user_service')->where('id', $this->user_service->id)->update(['user_info' => serialize($this->user_service->user_info)]);
+                $this->user_service_info = new HotWaterKiyvEnergoUserInfo((boolean)$request['counter'], (boolean)$request['dryer'], (integer)$request['relief'], (integer)$request['num_of_relief_hot_water']);
+                $user_service = UserService::find($this->user_service_id);
+                $user_service->user_info = serialize($this->user_service_info);
+                $user_service->save();
             }
         }
         else
         {
-            if(null === $this->user_service)
+            if(null === $this->user_service_info)
             {
-                $this->user_service = new HotWaterKiyvEnergoUserInfo($Request['counter'], $Request['dryer'], $Request['relief'], $Request['num_of_relief_hot_water']);
+                $this->user_service_info = new HotWaterKiyvEnergoUserInfo($request['counter'], $request['dryer'], $request['relief'], $request['num_of_relief_hot_water']);
             }
         }
 
@@ -278,7 +300,7 @@ class HotWaterKiyvEnergoService extends BasicService
      */
     public function calculate($info_array)
     {
-        if($this->user_service->counter)
+        if($this->user_service_info->counter)
         {
             if($info_array[0] && $info_array[1] && $info_array[0] = (int)$info_array[0] && $info_array[1] = (int)$info_array[1])
             {
@@ -312,4 +334,33 @@ class HotWaterKiyvEnergoService extends BasicService
     }
 
 
+    private function validate_info_request($request)
+    {
+        if(array_key_exists('counter', $request))
+        {
+            $request['counter'] = true;
+        }
+        else
+        {
+            $request['counter'] = false;
+        }
+        if(array_key_exists('dryer', $request))
+        {
+            $request['dryer'] = true;
+        }
+        else
+        {
+            $request['dryer'] = false;
+        }
+        if(array_key_exists('relief', $request))
+        {
+            $request['relief'] = (integer)$request['relief'];
+        }
+        else
+        {
+            $request['relief'] = 0;
+        }
+
+
+    }
 }

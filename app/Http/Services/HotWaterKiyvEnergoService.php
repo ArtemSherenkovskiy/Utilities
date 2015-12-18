@@ -170,14 +170,32 @@ class HotWaterKiyvEnergoService extends BasicService
     {
         if($this->user_service_info->counter)
         {
-            $previous_counter = History::where('user_service_id', '=', $this->user_service_id)->max('time_period');
-            $answer = '';
+            $previous_history_element =  History::where('user_service_id', '=', $this->user_service_id)->max('time_period');
+            if(null === $previous_history_element)
+            {
+                $previous_counter = 0;
+            }
+            else
+            {
+                $previous_counter = unserialize($previous_history_element->history_item)->counter;
+            }
+            $answer = ' <div class="field">
+                            <label>Показания счетчика в прошлом месяце</label>
+                            <input type="text" name="previous_counter" value="' . $previous_counter . '">
+                        </div>
+                        <div class="field">
+                            <label>Текущие показания счетчика</label>
+                            <input type="text" name="current_counter" value="' . $previous_counter . '">
+                        </div>';
         }
         else
         {
-            $answer = '';
+            $answer = ' <div class="field">
+                            <label>Количество использованной воды</label>
+                            <input type="text" name="water_volume" value="' . 0 . '">
+                        </div>';
         }
-        return $answer;
+        return view('services/before_calculate')->with(['input_form' => $answer]);
     }
 
     public function info()

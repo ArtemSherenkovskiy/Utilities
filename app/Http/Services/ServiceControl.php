@@ -57,7 +57,7 @@ class ServiceControl
             }
             else
             {
-                return view('errorVendor');
+                return 'errorVendor';
             }
         }
 

@@ -14,8 +14,17 @@ class VendorTest extends TestCase
      */
     public function testExample()
     {
-        $enr_vendor = new EnergyVendor();
+        assertEquals(\App\Http\Services\ServiceControl::generate(0), 'errorVendor');
+        assertStringEndsWith('</html>',\App\Http\Services\ServiceControl::generate(1));
+        assertNotEmpty(\App\Http\Services\ServiceControl::generate(null));
 
-        $this->assertEquals($enr_vendor->layout(),'Implemented method from BasicVendor');
+    }
+
+    public function testDataBase()
+    {
+        $service = new \App\Service(['service_alias' => 'Internet', 'service_name' => 'Интернет', 'vendor_id' => 1);
+        $service->save();
+        $service_from_db = App\Http\Service::whereRaw("service_alias = 'Internet' and vendor_id = 1")->get()[0];
+        assertEquals($service->id, $service_from_db->id);
     }
 }

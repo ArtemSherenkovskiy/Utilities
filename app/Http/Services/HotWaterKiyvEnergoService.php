@@ -273,9 +273,11 @@ class HotWaterKiyvEnergoService extends BasicService
             </div>
             <div class="two fields">
             <div class="ui input">
+             <label>Скидка</label>
              <input type="text" placeholder="Размер скидки в %" name="relief" value="' . ($this->user_service_info->relief) . '">
              </div>
             <div class="ui input">
+            <label>Объкмы льготной воды</label>
             <input type="text" placeholder="Объем льготной воды в куб.м" name="num_of_relief_hot_water" value="' . ($this->user_service_info->num_of_relief_hot_water) . '">
             </div>
             </div>';
@@ -383,13 +385,13 @@ class HotWaterKiyvEnergoService extends BasicService
     {
         $answer = '<div class="inline field">
                         <div class="ui input">
-                            <label>Сумма счета</label>
+                            <label>Текущее значение счетчика</label>
                             <input type="text" placeholder="Сумма" name="counter_value" value="' . $calculate_values[0] . '">
                         </div>
                    </div>
                    <div class="inline field">
                         <div class="ui input">
-                            <label>Сумма счета</label>
+                            <label>Объемы использованной воды</label>
                             <input type="text" placeholder="Сумма" name="consumed_value" value="' . $calculate_values[1] . '">
                         </div>
                    </div>

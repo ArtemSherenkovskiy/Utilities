@@ -70,11 +70,31 @@ class HotWaterKiyvEnergoMonthInfo
      */
     public $counter_value;
 
+
+    /**
+     * @var
+     * value of consumed water
+     */
+    public $consumed_value;
+
     /**
      * @var
      * value of money you paid that month
      */
     public $paid_value;
+
+    /**
+     * HotWaterKiyvEnergoMonthInfo constructor.
+     * @param $counter_value
+     * @param $consumed_value
+     * @param $paid_value
+     */
+    public function __construct1($counter_value, $consumed_value, $paid_value)
+    {
+        $this->counter_value = $counter_value;
+        $this->consumed_value = $consumed_value;
+        $this->paid_value = $paid_value;
+    }
 
 
     public function __construct()
@@ -83,16 +103,7 @@ class HotWaterKiyvEnergoMonthInfo
         $this->paid_value = 0.0;
     }
 
-    /**
-     * HotWaterKiyvEnergoMonthInfo constructor.
-     * @param $counter_value
-     * @param $paid_value
-     */
-    public function __construct1($counter_value, $paid_value)
-    {
-        $this->counter_value = $counter_value;
-        $this->paid_value = $paid_value;
-    }
+
 
 
 }
@@ -309,24 +320,41 @@ class HotWaterKiyvEnergoService extends BasicService
 
     }
 
+    public function safe_history($request)
+    {
+        $history_item = new HotWaterKiyvEnergoMonthInfo($request['counter_value'], $request['consumed_value'], $request['paid_value']);
+        $time = strtotime(date('Y-m-01 00:00:00'));
+        if(History::whereRaw("user_service_id = $this->user_service_id and time_period = $time")->get())
+        {
+            throw new ServiceException("Current month has been calculated");
+        }
+        $history = new History();
+        $history->time_period = $time;
+        $history->history_item = serialize($history_item);
+        $history->user_service_id = $this->user_service_id;
+        $history->save();
+    }
+
     /**
      * @param $info_array
      * the first element is counter value of previous month
      * the second value is counter value of current month
      * \n if you don't have counter, the first element is volume of consumed water
-     * @return int
+     * @return
      */
     public function calculate($info_array)
     {
+        $current_counter = 0;;
         if($this->user_service_info->counter)
         {
             if($info_array[0] && $info_array[1] && $info_array[0] = (int)$info_array[0] && $info_array[1] = (int)$info_array[1])
             {
+                $current_counter = $info_array[1];
                 $diff = $info_array[1] - $info_array[0];
 
             } else
             {
-                return -1;
+                throw new ServiceException("Error calculating HotWaterKiyvEnergoService@calculate() error with input");
             }
         }
         else
@@ -337,20 +365,42 @@ class HotWaterKiyvEnergoService extends BasicService
             }
             else
             {
-                return -1;
+                throw new ServiceException("Error calculating HotWaterKiyvEnergoService@calculate() error with input");
             }
         }
-        $diff = $diff - ($this->user_info->numOfReliefHotWater < $diff ? $this->user_info->numOfReliefHotWater : $diff) * $this->user_info->relief;
+        $diff_with_relief = $diff - ($this->user_info->numOfReliefHotWater < $diff ? $this->user_info->numOfReliefHotWater : $diff) * $this->user_info->relief;
         if($this->user_info->dryer)
         {
-            $cost = $diff * self::COST_WITH_DRYER;
+            $cost = $diff_with_relief * self::COST_WITH_DRYER;
         } else
         {
-            $cost = $diff * self::COST_WITHOUT_DRYER;
+            $cost = $diff_with_relief * self::COST_WITHOUT_DRYER;
         }
-        return $cost;
+        return $this->successful_calculate_layout([$current_counter, $diff, $cost]);
     }
 
+    public function successful_calculate_layout($calculate_values)
+    {
+        $answer = '<div class="inline field">
+                        <div class="ui input">
+                            <label>Сумма счета</label>
+                            <input type="text" placeholder="Сумма" name="counter_value" value="' . $calculate_values[0] . '">
+                        </div>
+                   </div>
+                   <div class="inline field">
+                        <div class="ui input">
+                            <label>Сумма счета</label>
+                            <input type="text" placeholder="Сумма" name="consumed_value" value="' . $calculate_values[1] . '">
+                        </div>
+                   </div>
+                   <div class="inline field">
+                        <div class="ui input">
+                            <label>Сумма счета</label>
+                            <input type="text" placeholder="Сумма" name="paid_value" value="' . $calculate_values[2] . '">
+                        </div>
+                   </div>';
+       return view('successful_calculate')->with(['result_form' => $answer]);
+    }
 
     private function validate_info_request($request)
     {

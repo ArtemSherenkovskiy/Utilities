@@ -154,6 +154,11 @@ class HeatingKiyvEnergoService extends BasicService
         // TODO: Implement safe() method.
     }
 
+    public function safe_history($request)
+    {
+        // TODO: Implement safe_history() method.
+    }
+
     /**
      * @param $info_array
      * if you have counter
@@ -181,5 +186,9 @@ class HeatingKiyvEnergoService extends BasicService
         return $cost;
     }
 
+    public function successful_calculate_layout($calculate_values)
+    {
+        // TODO: Implement successful_calculate_layout() method.
+    }
 
 }

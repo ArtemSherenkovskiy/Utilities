@@ -146,6 +146,11 @@ class ColdWaterKiyvVodoKanalService extends BasicService
         // TODO: Implement safe() method.
     }
 
+    public function safe_history($request)
+    {
+        // TODO: Implement safe_history() method.
+    }
+
 
     /**
      * @param $info_array
@@ -174,6 +179,11 @@ class ColdWaterKiyvVodoKanalService extends BasicService
         {
             return -1;
         }
+    }
+
+    public function successful_calculate_layout($calculate_values)
+    {
+        // TODO: Implement successful_calculate_layout() method.
     }
 
 

@@ -238,6 +238,11 @@ class ElectricityKiyvEnergoService extends BasicService
         // TODO: Implement safe() method.
     }
 
+    public function safe_history($request)
+    {
+        // TODO: Implement safe_history() method.
+    }
+
     /**
      * @param $counter_values_array
      * $counter_values_array[0] must contains last month counter value
@@ -289,6 +294,11 @@ class ElectricityKiyvEnergoService extends BasicService
             $energy_cost += self::calculate_location_cost(self::MAX_FIRST_COUNTRYSIDE, self::MAX_SECOND, $energy_used) - self::calculate_relief_with_two_cost_change(self::MAX_FIRST_COUNTRYSIDE, self::MAX_SECOND, $energy_used);
         }
         return $energy_cost / 100;
+    }
+
+    public function successful_calculate_layout($calculate_values)
+    {
+        // TODO: Implement successful_calculate_layout() method.
     }
 
     private function calculate_location_cost($max_first, $max_second, $energy_used)

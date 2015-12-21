@@ -148,7 +148,7 @@ class ColdWaterKiyvVodoKanalService extends BasicService
         {
             $this->guest = false;
             $this->user_info = Auth::user();
-            $user_services = UserService::whereRaw('user_id = '. $this->user_info->id .' and service_id = ' . $this->service_id);
+            $user_services = UserService::whereRaw('user_id = '. $this->user_info->id .' and service_id = ' . $this->service_id)->get();
             if(count($this->user_service_info) <= 0)
             {
                 $this->user_service_info = null;

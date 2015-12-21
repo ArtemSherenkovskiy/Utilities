@@ -11,7 +11,7 @@
 <button class="ui primary button" type="submit">
     Сохранить
 </button>
-<button class="ui button">
+<button class="ui button" type="reset">
     Стереть
 </button>
 </form>

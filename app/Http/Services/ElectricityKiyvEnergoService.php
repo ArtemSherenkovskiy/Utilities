@@ -169,35 +169,53 @@ class ElectricityKiyvEnergoService extends BasicService
     }
 
 
-    public function layout()
+    public function before_calculate_layout()
     {
-        $answer = '<div class="ui slider checkbox">
-            <input type="checkbox" tabindex="0" class="hidden">
+
+    }
+
+    public function info()
+    {
+        // TODO: Implement info() method.
+    }
+
+    public function create_user_info_view()
+    {
+        $answer = '<div class="inline field">
+            <div class="ui checkbox">
+            <input type="checkbox" name="location">
             <label>Я живу в городе или ПГТ.</label>
             </div>
-            <div class="ui slider checkbox">
-            <input type="checkbox" tabindex="0" class="hidden">
+            </div>
+            <div class="inline field">
+            <div class="ui checkbox">
+            <input type="checkbox" name="electric_cooker">
             <label>У меня дома электроплита.</label>
             </div>
-            <div class="ui slider checkbox">
-            <input type="checkbox" tabindex="0" class="hidden">
+            </div>
+            <div class="inline field">
+            <div class="ui checkbox">
+            <input type="checkbox" name="heat_supply">
             <label>У меня дома электроотопление/отсутствует центральное отпление.</label>
             </div>
-            <div class="ui slider checkbox">
-            <input type="checkbox" tabindex="0" class="hidden">
+            </div>
+            <div class="inline field">
+            <div class="ui checkbox">
+            <input type="checkbox" name="child_support">
             <label>Мы многодетная семья.</label>
             </div>
-            <div class="ui slider checkbox">
-            <input type="checkbox" tabindex="0" class="hidden">
-            <label>У меня дома есть счетчик.</label>
             </div>
-            <div class="ui slider checkbox">
-            <input type="checkbox" tabindex="0" class="hidden">
+            <div class="inline field">
+            <div class="ui checkbox">
+            <input type="checkbox" name="common_metric">
             <label>Мой дом рассчитывается с энергоснабжающей организацией по общему расчетному прибору учета.</label>
             </div>
-            <div class="ui slider checkbox">
-            <input type="checkbox" tabindex="0" class="hidden">
+            </div>
+            <div class="inline field">
+            <div class="ui checkbox">
+            <input type="checkbox" name="common_metric_hostel">
             <label>Общежитиям (подпадающим под определение «население, которое рассчитывается с энергоснабжающей организацией по общему расчетному прибору учета»)</label>
+            </div>
             </div>
             <div class="two fields">
             <div class="ui input">
@@ -210,14 +228,19 @@ class ElectricityKiyvEnergoService extends BasicService
         return view('services/create_service')->with(['layout'=> $answer]);
     }
 
-    public function info()
+    public function create_user_info_view_with_info()
     {
-        // TODO: Implement info() method.
+        // TODO: Implement create_user_info_view_with_info() method.
     }
 
-    public function create_user_info()
+    public function safe($request)
     {
-        // TODO: Implement createUserInfo() method.
+        // TODO: Implement safe() method.
+    }
+
+    public function safe_history($request)
+    {
+        // TODO: Implement safe_history() method.
     }
 
     /**
@@ -271,6 +294,11 @@ class ElectricityKiyvEnergoService extends BasicService
             $energy_cost += self::calculate_location_cost(self::MAX_FIRST_COUNTRYSIDE, self::MAX_SECOND, $energy_used) - self::calculate_relief_with_two_cost_change(self::MAX_FIRST_COUNTRYSIDE, self::MAX_SECOND, $energy_used);
         }
         return $energy_cost / 100;
+    }
+
+    public function successful_calculate_layout($calculate_values)
+    {
+        // TODO: Implement successful_calculate_layout() method.
     }
 
     private function calculate_location_cost($max_first, $max_second, $energy_used)

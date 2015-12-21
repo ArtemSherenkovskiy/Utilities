@@ -38,6 +38,8 @@ class ColdWaterKiyvVodoKanalUserInfo
      */
     public $numOfReliefHotWater;
 
+
+
     public function __construct()
     {
         $this->relief = 0.0;
@@ -105,11 +107,23 @@ class ColdWaterKiyvVodoKanalService extends BasicService
     }
 
 
-    public function layout()
+    public function before_calculate_layout()
     {
-        $answer = '<div class="ui slider checkbox">
-            <input type="checkbox" tabindex="0" class="hidden">
+
+    }
+
+    public function info()
+    {
+        // TODO: Implement info() method.
+    }
+
+    public function create_user_info_view()
+    {
+        $answer = '<div class="inline field">
+            <div class="ui slider checkbox">
+            <input type="checkbox" tabindex="0" name="counter">
             <label>У меня дома есть счетчик.</label>
+            </div>
             </div>
             <div class="two fields">
             <div class="ui input">
@@ -122,14 +136,19 @@ class ColdWaterKiyvVodoKanalService extends BasicService
         return view('services/create_service')->with(['layout'=> $answer]);
     }
 
-    public function info()
+    public function create_user_info_view_with_info()
     {
-        // TODO: Implement info() method.
+        // TODO: Implement create_user_info_view_with_info() method.
     }
 
-    public function create_user_info()
+    public function safe($request)
     {
-        // TODO: Implement create_user_info() method.
+        // TODO: Implement safe() method.
+    }
+
+    public function safe_history($request)
+    {
+        // TODO: Implement safe_history() method.
     }
 
 
@@ -160,6 +179,11 @@ class ColdWaterKiyvVodoKanalService extends BasicService
         {
             return -1;
         }
+    }
+
+    public function successful_calculate_layout($calculate_values)
+    {
+        // TODO: Implement successful_calculate_layout() method.
     }
 
 

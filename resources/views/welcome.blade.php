@@ -1,58 +1,328 @@
-@extends('layout')
+@extends('test_layout')
 @section('content')
- <div class="ui grid container">
- <div class="row"></div>
- <div class="row"></div>
+    <div class="ui hidden transition information">
+        <h1 class="ui inverted centered header">
+            Рассчитывайте услуги прямо здесь
+        </h1>
+        <p class="ui centered lead">Все, что вам нужно присоединиться к нам<br/></p>
+        <div class="ui grid container">
 
- <div class="centered stretched row" >
- <div class="eight wide column">
-<div class="ui segment">
- <h2>Надоело считать вручную - тогда присоединяйся к нам</h2>
 
- </div>
- </div>
- <div class="eight wide column">
-<div class="ui segment">
-<form class="ui form" method="post" action="{{route('loginPost')}}">
-  <div class="field">
-    <label>Username</label>
-            <div class="ui left icon input">
-              <input type="email" name="email" placeholder="email">
-              <i class="user icon"></i>
-  </div>
-  </div>
-  <div class="field">
-    <label>Password</label>
-    <input type="password" name="password" placeholder="Password">
-  </div>
-    @if(session('errors'))
-   <div class="ui red message">{{session('errors')}}</div>
-   @endif
- <input type="hidden" name="_token" value="{{ csrf_token() }}">
-    <div class="ui grid container"> <div class="centered row">
-            <button class="ui button" type="submit">Submit</button>
+            <div class="centered stretched row" >
+
+                <div class="eight wide column">
+                    <button href="#" class="large basic inverted animated fade ui button" onclick="reg()">
+                        <div class="visible content">Присоедениться</div>
+                        <div class="hidden content">Зарегистрироваться</div>
+                    </button>
+
+                    @yield("register-modal")
+
+                    <div class="ui horizontal divider">
+                        Или
+                    </div>
+                    <form class="ui form" method="post" action="{{route('loginPost')}}">
+                        <div class="field">
+
+                            <p><label for="">Почта</label></p>
+                            <div class="ui left icon input">
+                                <input type="email" name="email" placeholder="email">
+                                <i class="user icon"></i>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <p><label for="">Пароль</label></p>
+
+                            <div class="ui left icon input">
+                                <input type="password" name="password" placeholder="Password">
+                                <i class="lock icon"></i>
+                            </div>
+
+                        </div>
+                        @if(session('errors'))
+                            <div class="ui red message">{{session('errors')}}</div>
+                        @endif
+                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                        <div class="ui grid container"> <div class="centered row">
+                                <button class="large basic inverted animated fade ui button" type="submit">
+
+                                    <div class="visible content">Войти</div>   <div class="hidden content">Войти</div>            </button>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+
+
+
+
+        </div>
+    </div>
+    </div>
+
+    <div class="ui vertical feature segment">
+        <div class="ui centered page grid">
+            <div class="fourteen wide column">
+                <div class="ui three column center aligned stackable divided grid">
+                    <div class="column column-feature">
+                        <div class="ui icon header">
+                            <i class="flaticon-connecting icon"></i>
+                            Рассчет
+                        </div>
+                        <p>Создайте список сервисов для ежемесячного подсчета</p>
+
+                    </div>
+                    <div class="column column-feature">
+                        <div class="ui icon header">
+                            <i class="flaticon-calendar icon"></i>
+                            История
+                        </div>
+                        <p>Просматривайте историю использования услуг</p>
+
+                    </div>
+                    <div class="column column-feature">
+                        <div class="ui icon header">
+                            <i class="flaticon-speech icon"></i>
+                            Сообщество
+                        </div>
+                        <p>Оставляйте отзывы и комментарии</p>
+
+                    </div>
+                </div>
+
+
+
+            </div>
         </div>
     </div>
 
-</form>
- <div class="ui horizontal divider">
-    Or
-  </div>
-    <div class="ui grid container"> <div class="centered row">
-            <button class="ui big green labeled icon button" onclick="reg()">
-                <i class="signup icon"></i>
-                Sign Up
-            </button>
-            @yield("register-modal")
+
+
+
+
+
+
+
+    <div class="ui recent-works vertical segment">
+        <div class="ui very relaxed stackable centered page grid">
+            <div class="row">
+                <div class="eight wide centered column">
+                    <h1 class="center aligned ui inverted header">
+                        Recent Works
+                    </h1>
+                    <div class="ui horizontal divider"><i class="white flaticon-camera icon"></i></div>
+                    <p class="ui centered lead">Checkout Our Recently Completed Works<br>you will be amazed!.</p>
+                </div>
+            </div>
+            <div class="fourteen wide column">
+                <div class="ui three column aligned stackable divided grid">
+
+
+
+                    <div class="column">
+
+                        <div class="ui card" data-html="<div class='header'>User Rating</div><div class='content'><div class='ui star rating'><i class='active icon'></i><i class='active icon'></i><i class='active icon'></i><i class='icon'></i><i class='icon'></i></div></div>">
+                            <div class="image">
+                                <img src="images/totoro-horizontal.jpg">
+                            </div>
+                            <div class="content">
+                                <div class="header">My Neighbor Totoro</div>
+                                <div class="description">
+                                    Two sisters move to the country with their father in order to be closer to their hospitalized mother, and discover the surrounding trees are inhabited by magical spirits.
+                                </div>
+                            </div>
+                            <div class="ui two bottom attached buttons">
+                                <div class="ui button">
+                                    <i class="flaticon-plus icon"></i>
+                                    Queue
+                                </div>
+                                <div class="ui pink button">
+                                    <i class="flaticon-play icon"></i>
+                                    Watch
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="column">
+
+                        <div class="ui card" data-html="<div class='header'>User Rating</div><div class='content'><div class='ui star rating'><i class='active icon'></i><i class='active icon'></i><i class='active icon'></i><i class='icon'></i><i class='icon'></i></div></div>">
+                            <div class="image">
+                                <img src="images/totoro-horizontal.jpg">
+                            </div>
+                            <div class="content">
+                                <div class="header">My Neighbor Totoro</div>
+                                <div class="description">
+                                    Two sisters move to the country with their father in order to be closer to their hospitalized mother, and discover the surrounding trees are inhabited by magical spirits.
+                                </div>
+                            </div>
+                            <div class="ui two bottom attached buttons">
+                                <div class="ui button">
+                                    <i class="flaticon-plus icon"></i>
+                                    Queue
+                                </div>
+                                <div class="ui pink button">
+                                    <i class="flaticon-play icon"></i>
+                                    Watch
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                    <div class="column">
+
+                        <div class="ui card" data-html="<div class='header'>User Rating</div><div class='content'><div class='ui star rating'><i class='active icon'></i><i class='active icon'></i><i class='active icon'></i><i class='icon'></i><i class='icon'></i></div></div>">
+                            <div class="image">
+                                <img src="images/totoro-horizontal.jpg">
+                            </div>
+                            <div class="content">
+                                <div class="header">My Neighbor Totoro</div>
+                                <div class="description">
+                                    Two sisters move to the country with their father in order to be closer to their hospitalized mother, and discover the surrounding trees are inhabited by magical spirits.
+                                </div>
+                            </div>
+                            <div class="ui two bottom attached buttons">
+                                <div class="ui button">
+                                    <i class="flaticon-plus icon"></i>
+                                    Queue
+                                </div>
+                                <div class="ui pink button">
+                                    <i class="flaticon-play icon"></i>
+                                    Watch
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+
+
+
+                </div>
+            </div>
         </div>
     </div>
 
-</div>
- </div>
- </div>
- <div class="centered streched row">
- <div class="column"><img class="ui medium centered image" src="https://image.inforesist.org/uploads/1383938477_kommunal_platezh-430x243.jpg" alt=""/></div>
- </div>
-     <div class="row">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab accusamus amet atque consectetur culpa doloribus eaque, earum eos ex hic impedit inventore iste maiores minima molestiae nemo numquam omnis porro quas, quidem quo quod quos ullam voluptate voluptatem! Ab accusamus amet corporis cum debitis, doloremque dolorum error explicabo fugiat illo ipsa maiores maxime nemo nulla, odit pariatur quaerat quia quos rem sit soluta veniam voluptates. Aliquid commodi distinctio doloribus et ex, id illum impedit ipsum iure minima modi nemo nesciunt non odio omnis provident, qui quidem, quis ratione recusandae sequi tempora veritatis voluptates. Cupiditate explicabo perferendis porro saepe sequi? Aperiam at atque consectetur culpa deserunt dicta eligendi, error excepturi exercitationem explicabo, in ipsa itaque, nobis quam quia quod repellendus sapiente sunt temporibus ullam. Aliquid aut dignissimos eos, est exercitationem expedita impedit itaque, iure, laudantium magni nam repudiandae similique? Amet at corporis eius eligendi exercitationem expedita hic illo, ipsam itaque minima non numquam quaerat quas recusandae, reprehenderit vero voluptates? At culpa cum dicta distinctio ex fugit, magni, maxime molestiae perspiciatis porro repellat sint, voluptatem voluptatibus! Consectetur, consequuntur cupiditate dignissimos dolor dolores eos est fuga, illum iusto labore, magni maxime quae quaerat quasi quibusdam quis ratione tenetur veniam? Accusantium alias amet aspernatur aut blanditiis commodi corporis debitis dicta dignissimos, dolorum ducimus, eius eligendi enim esse explicabo facilis iste libero neque nesciunt nobis obcaecati perferendis quisquam quo quod ratione recusandae rem repellendus reprehenderit repudiandae tempora velit veniam voluptate voluptatibus. Ad cumque dolorum, hic illo impedit ipsa ipsam iusto officia recusandae, rem sequi, totam velit voluptates. Consequatur ducimus enim impedit ipsam ipsum iusto labore, nam nihil nulla possimus quasi reiciendis reprehenderit soluta tenetur vero voluptas voluptatum. Asperiores debitis dignissimos doloremque doloribus ducimus excepturi laboriosam laborum, maiores maxime minima nam neque nihil omnis pariatur placeat praesentium provident ratione rerum saepe sapiente sequi sit sunt suscipit temporibus ullam veniam voluptas? Ex iure maiores nemo nulla quos reprehenderit repudiandae voluptatibus. Ad aliquam architecto ea magnam nobis omnis perspiciatis quas, quia quis quod recusandae rem repudiandae, sequi? Adipisci aliquam aliquid aperiam at aut autem consectetur cum doloribus ea error exercitationem facere fuga incidunt iste itaque iusto labore magni nobis nulla numquam obcaecati odit officiis praesentium quam, quidem quisquam quo quos ratione sapiente voluptate. Accusantium aliquid aspernatur, assumenda delectus, eaque fugit, id itaque libero nobis nostrum odio optio repellat similique tempora tempore vel voluptatibus. Alias beatae eligendi, enim in itaque magni necessitatibus pariatur tenetur voluptates. Accusantium aut, excepturi illum iure modi necessitatibus nemo nobis quaerat! Beatae, ducimus, enim! Accusamus alias atque commodi cum cupiditate deleniti ea eligendi, est hic laudantium minus nesciunt nobis non, rem repellat sequi tenetur, veniam! Ab harum laboriosam quis reprehenderit vitae. Aspernatur, quae, voluptas. A ab architecto consectetur cum dicta doloremque eius esse facere illum impedit ipsum labore laudantium minima molestias mollitia nam natus necessitatibus nemo nostrum numquam officia omnis perferendis quibusdam quidem quod quos, reiciendis repellat sunt ullam voluptate. Accusantium ad, aliquam, architecto culpa dolorum, ea exercitationem explicabo facere in magni modi nemo obcaecati praesentium quia quibusdam totam vitae! Corporis ipsa optio possimus rerum?</div>
- </div>
+
+    <div class="ui vertical segment">
+        <div class="ui stackable center aligned page grid">
+            <div class="row">
+                <div class="eight wide column">
+                    <h1 class="ui header">
+                        Мы в других сообществах
+                    </h1><div class="ui horizontal divider"><i class="flaticon-settings icon"></i></div>
+                    <p class="ui centered lead">
+
+                    </p>
+                    <br/>
+                </div>
+            </div>
+            <div class="four column logo row">
+                <div class="column">
+                    <div class="ui shape">
+                        <div class="sides">
+                            <div class="active side">
+                                <i class="huge flaticon-facebook icon"></i>
+                            </div>
+                            <div class="side">
+                                <i class="huge flaticon-google icon"></i>
+                            </div>
+                            <div class="side">
+                                <i class="huge flaticon-twitter icon"></i>
+                            </div>
+                            <div class="side">
+                                <i class="huge flaticon-pinterest icon"></i>
+                            </div>
+                            <div class="side">
+                                <i class="huge flaticon-google icon"></i>
+                            </div>
+                            <div class="side">
+                                <i class="huge flaticon-more icon"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="ui shape">
+                        <div class="sides">
+                            <div class="side">
+                                <i class="huge flaticon-google icon"></i>
+                            </div>
+                            <div class="side">
+                                <i class="huge flaticon-more icon"></i>
+                            </div>
+                            <div class="active side">
+                                <i class="huge flaticon-twitter icon"></i>
+                            </div>
+                            <div class="side">
+                                <i class="huge flaticon-facebook icon"></i>
+                            </div>
+                            <div class="side">
+                                <i class="huge flaticon-google icon"></i>
+                            </div>
+                            <div class="side">
+                                <i class="huge flaticon-twitter icon"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="column">
+                    <div class="ui shape">
+                        <div class="sides">
+                            <div class="active side">
+                                <i class="huge flaticon-facebook icon"></i>
+                            </div>
+                            <div class="side">
+                                <i class="huge flaticon-google icon"></i>
+                            </div>
+                            <div class="side">
+                                <i class="huge flaticon-twitter icon"></i>
+                            </div>
+                            <div class="side">
+                                <i class="huge flaticon-pinterest icon"></i>
+                            </div>
+                            <div class="side">
+                                <i class="huge flaticon-google icon"></i>
+                            </div>
+                            <div class="side">
+                                <i class="huge flaticon-more icon"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="ui shape">
+                        <div class="sides">
+                            <div class="side">
+                                <i class="huge flaticon-google icon"></i>
+                            </div>
+                            <div class="side">
+                                <i class="huge flaticon-more icon"></i>
+                            </div>
+                            <div class="active side">
+                                <i class="huge flaticon-twitter icon"></i>
+                            </div>
+                            <div class="side">
+                                <i class="huge flaticon-facebook icon"></i>
+                            </div>
+                            <div class="side">
+                                <i class="huge flaticon-google icon"></i>
+                            </div>
+                            <div class="side">
+                                <i class="huge flaticon-twitter icon"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 @stop

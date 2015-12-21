@@ -10,6 +10,8 @@ use App\Http\Controllers\Controller;
 use App\Service;
 use App\Vendor;
 use App\Http\Services;
+use Illuminate\Support\Facades\Cache;
+
 class ServiceController extends Controller
 {
     /**
@@ -17,6 +19,7 @@ class ServiceController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    private $service;
     public function index()
     {
         //$userServices = UserService::where('user_id',\Auth::user()->id)->get();
@@ -42,8 +45,10 @@ class ServiceController extends Controller
 
     public function getService($id=null)
     {
-        $vC = new  Services\ServiceControl();
-        return $vC->generate($id);
+        $this->service  =Services\ServiceControl::generate($id);
+        Cache::put('service',$this->service,10);
+        view()->share('id',$id);
+        return $this->service->create_user_info_view();
 
     }
     /**
@@ -54,9 +59,13 @@ class ServiceController extends Controller
      */
     public function store(Request $request)
     {
+        \Log::error('service object'.isset($this->service));
         //
+        // $service_name = DB::select('SELECT service_alias,vendor_alias from user_service JOIN vendors where user_service.id ='.$id,';');
 
-        return $request->input();
+        $this->service  =Services\ServiceControl::generate($request->input('id'));
+        $this->service->safe($request);
+        return  redirect('/');
     }
 
     /**
@@ -76,9 +85,12 @@ class ServiceController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function editService($service_id)
     {
         //
+        $this->service  =Services\ServiceControl::generate($service_id);
+        return $this->service->create_user_info_view_with_info();
+
     }
 
     /**

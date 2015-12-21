@@ -31,22 +31,22 @@
 
 
 
-            <div class="ui secondary pointing menu">
+            <div class="ui secondary menu">
                 <div class="logo item">
                     Utilites
                 </div>
                 @if(\Auth::guest())
-                    <a class="item">
+                    <a class="button item">
                         <i class="home icon"></i> Возможности
                     </a>
                     <a class="button item">
                         <i class="grid layout icon"></i> Услуги
                     </a>
-                    <a class="red item">
+                    <a class="button item">
                         <i class="info icon"></i> О нас
                     </a>
                 @else
-                    <a class="ui active animated button item">
+                    <a class="ui animated button item">
                         <div class="hidden content"><i class="edit icon"></i></div>
                         <div class="visible content">Личный кабинет
                         </div>

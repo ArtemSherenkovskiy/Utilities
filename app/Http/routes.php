@@ -22,7 +22,8 @@ Route::get('/', ['middleware' => 'auth' , function () {
 
 
 Route::get('/service{id?}', ['as'=>'service','uses'=>'ServiceController@getService']);
-Route::post('service/save',['as'=>'saveService','uses'=>'ServiceController@store']);
+Route::post('service{id}/save',['as'=>'saveService','uses'=>'ServiceController@store']);
+Route::get('edit/service{service_id}',['as' => 'editService', 'uses' => 'ServiceController@editService']);
 
 
 

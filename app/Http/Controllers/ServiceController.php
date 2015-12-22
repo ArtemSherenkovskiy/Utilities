@@ -27,8 +27,10 @@ class ServiceController extends Controller
         //\Log::error($userServices);
         $services =  Service::all();
         $vendors = Vendor::all();
-        \Log::error($vendors);
-       return view('services/services')->with(['services'=>$services,'vendors'=>$vendors]);
+        $user_services = UserService::all();
+        //\Log::error($vendors);
+         return view('services/services')->with(['services'=>$services,'vendors'=>$vendors,'user_services'=>$user_services]);
+        //return $user_services;
 
     }
 
@@ -59,7 +61,7 @@ class ServiceController extends Controller
      */
     public function store(Request $request)
     {
-        \Log::error('service object'.isset($this->service));
+        //\Log::error('service object'.isset($this->service));
         //
         // $service_name = DB::select('SELECT service_alias,vendor_alias from user_service JOIN vendors where user_service.id ='.$id,';');
 

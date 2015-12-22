@@ -12,9 +12,10 @@
                     <div class="ui header">
                         Ваши услуги:
                     </div>
-                    @foreach(App\UserService::where('user_id',\Auth::user()->id)->get()  as $userService )
+                    @foreach($user_services->where('user_id',\Auth::user()->id)  as $userService )
+
                         <a class="ui inverted red huge button" href="{{route('editService',['id'=>$userService->service_id])}}">
-                            {{App\Service::find($userService->service_id)->service_name}}
+                            {{$services->where('id',$userService->service_id)->first()['service_name']}}
                         </a>
                     @endforeach
                 </div>
@@ -43,10 +44,17 @@
                             </div>
                         </div>
                         <div class="description">
-                            <a class="ui inverted red button" href="{{route('service',['id' => $service->id])}}">
-                           <p>{{App\Vendor::find($service->vendor_id)->vendor_name}}  </p>
-                            </a>
-                            <p>{{App\Vendor::find($service->vendor_id)->description}} </p>
+
+
+                                    {{\Log::error('service '.$user_services->where('user_id',\Auth::user()->id)->where('service_id',$service->id))}}
+                                        @if($user_services->where('user_id',\Auth::user()->id)->where('service_id',$service->id))
+                                        <a class="ui inverted red button" href="{{route('service',['id' => $service->id])}}">
+                                            <p>{{App\Vendor::find($service->vendor_id)->vendor_name}}  </p>
+                                        </a>
+                                        <p>{{App\Vendor::find($service->vendor_id)->description}} </p>
+                                        @endif
+
+
                         </div>
                     </div>
 

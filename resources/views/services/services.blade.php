@@ -15,7 +15,7 @@
                     @foreach($user_services->where('user_id',\Auth::user()->id)  as $userService )
 
                         <a class="ui inverted red huge button" href="{{route('editService',['id'=>$userService->service_id])}}">
-                            {{$services->where('id',$userService->service_id)->first()['service_name']}}
+                            {{App\Service::where('id',$userService->service_id)->first()['service_name']}}
                         </a>
                     @endforeach
                 </div>
@@ -24,7 +24,7 @@
 
         </div>
             <div class="ui inverted vertical segment">
-        <div class="ui very relaxed stackable centered page grid">
+        <div class="ui very relaxed centered container grid">
 
         <div class="ui very huge button" onclick=reg()>
             Добавить услугу
@@ -45,17 +45,11 @@
                         </div>
                         <div class="description">
 
-
-                                    {{\Log::error('service '.$user_services->where('user_id',\Auth::user()->id)->where('service_id',$service->id))}}
-                                        @if($user_services->where('user_id',\Auth::user()->id)->where('service_id',$service->id))
-                                        <a class="ui inverted red button" href="{{route('service',['id' => $service->id])}}">
-                                            <p>{{App\Vendor::find($service->vendor_id)->vendor_name}}  </p>
-                                        </a>
                                         <p>{{App\Vendor::find($service->vendor_id)->description}} </p>
-                                        @endif
-
-
                         </div>
+                        <a class="ui inverted bottom attached red button" href="{{route('service',['id' => $service->id])}}">
+                            <p>{{App\Vendor::find($service->vendor_id)->vendor_name}}  </p>
+                        </a>
                     </div>
 
 

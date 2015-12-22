@@ -14,5 +14,5 @@ div#create_service_buttons.inline.field
 div#service_card.ui.card
 {
     border-width: 1em;
-   box-shadow: black;
+   box-shadow: inherit;
 }

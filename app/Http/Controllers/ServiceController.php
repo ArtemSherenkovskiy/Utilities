@@ -25,12 +25,19 @@ class ServiceController extends Controller
         //$userServices = UserService::where('user_id',\Auth::user()->id)->get();
         //
         //\Log::error($userServices);
-        $services =  Service::all();
+
         $vendors = Vendor::all();
         $user_services = UserService::all();
+
+        foreach($user_services as $user_service)
+        {
+            $user_services_id[]=$user_service->service_id;
+        }
+        $services =  Service::whereNotIn('id',$user_services_id)->get();
+
         //\Log::error($vendors);
          return view('services/services')->with(['services'=>$services,'vendors'=>$vendors,'user_services'=>$user_services]);
-        //return $user_services;
+        //return $services;
 
     }
 

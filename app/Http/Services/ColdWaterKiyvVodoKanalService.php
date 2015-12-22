@@ -15,6 +15,7 @@ use App\User;
 
 use App\Vendor;
 use DB;
+use Auth;
 
 class ColdWaterKiyvVodoKanalUserInfo
 {
@@ -138,7 +139,7 @@ class ColdWaterKiyvVodoKanalService extends BasicService
     public function __construct()
     {
         $vendor_id = Vendor::where('vendor_alias','=',self::VENDOR_ALIAS)->first()->id;
-        $this->service_id = Service::whereRaw('servise_alias = '. self::SERVICE_ALIAS . ' and vendor_id = ' . $vendor_id)->first()->id;
+        $this->service_id = Service::whereRaw('service_alias = \''. self::SERVICE_ALIAS . '\' and vendor_id = ' . $vendor_id)->first()->id;
         if(Auth::guest())
         {
             $this->guest = true;
@@ -249,7 +250,7 @@ class ColdWaterKiyvVodoKanalService extends BasicService
 
     public function create_user_info_view()
     {
-        $services = Service::where('service_name','=',self::HOT_WATER_ALIAS)->get();
+        $services = Service::where('service_alias','=',self::HOT_WATER_ALIAS)->get();
         $hot_water_vendors = '<option value="0">Нет горячей воды/Не высчитываю ее на данном сайте</option>';
         foreach($services as $service)
         {
@@ -321,7 +322,7 @@ class ColdWaterKiyvVodoKanalService extends BasicService
 
             if(null === $this->user_service_info)
             {
-                $this->user_service_info = new HotWaterKiyvEnergoUserInfo((boolean)$request['counter'], (integer)$request['hot_water_vendor'], (float)$request['relief'], (float)$request['num_of_relief_water']);
+                $this->user_service_info = new HotWaterKiyvEnergoUserInfo((boolean)$request['counter'], (integer)$request['hot_water_vendor'], (float)$request['relief'] / 100.0, (float)$request['num_of_relief_water']);
                 $user_service = new UserService();
                 $user_service->user_id = $this->user_info->id;
                 $user_service->service_id = $this->service_id;
@@ -446,6 +447,14 @@ class ColdWaterKiyvVodoKanalService extends BasicService
         if(array_key_exists('hot_water_vendor', $request))
         {
             $request['hot_water_vendor'] = (integer)($request['hot_water_vendor']);
+            if($request['hot_water_vendor'] != 0)
+            {
+                $hot_water_user_service = UserService::whereRaw('user_id = ' . $this->user_info->id . ' and service_id = ' . $request['hot_water_vendor'])->first();
+                if(null == $hot_water_user_service)
+                {
+                    //return error view with message that this user doesn't have this hot water service
+                }
+            }
         }
         else
         {

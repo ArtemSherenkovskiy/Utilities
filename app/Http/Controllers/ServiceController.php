@@ -22,7 +22,7 @@ class ServiceController extends Controller
         //$userServices = UserService::where('user_id',\Auth::user()->id)->get();
         //
         //\Log::error($userServices);
-        $services =  Service::all();
+        $services =  Service::groupBy('service_alias')->orderBy('service_name', 'asc')->get();
         $vendors = Vendor::all();
         \Log::error($vendors);
        return view('services/services')->with(['services'=>$services,'vendors'=>$vendors]);

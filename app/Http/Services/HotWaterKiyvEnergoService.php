@@ -317,7 +317,7 @@ class HotWaterKiyvEnergoService extends BasicService
         {
             if(null === $this->user_service_info)
             {
-                $this->user_service_info = new HotWaterKiyvEnergoUserInfo((boolean)$request['counter'], (boolean)$request['dryer'], (integer)$request['relief'], (integer)$request['num_of_relief_hot_water']);
+                $this->user_service_info = new HotWaterKiyvEnergoUserInfo((boolean)$request['counter'], (boolean)$request['dryer'], (integer)$request['relief']  / 100.0, (integer)$request['num_of_relief_hot_water']);
                 $user_service = new UserService();
                 $user_service->user_id = $this->user_info->id;
                 $user_service->service_id = $this->service_id;

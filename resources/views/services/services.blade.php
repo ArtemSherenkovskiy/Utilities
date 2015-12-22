@@ -1,6 +1,6 @@
 @extends("test_layout")
 @section("content")
-    </div>
+
     <div class="ui vertical segment">
         <div class="ui very relaxed stackable centered page grid">
 
@@ -20,12 +20,13 @@
                                 {{$service['service_name']}}
                             </div>
                         </div>
-                        <div class="description">
-                            <a class="" href="{{route('service',['id' => $service->id])}}">
-                           <p>{{App\Vendor::find($service->vendor_id)->vendor_name}}  </p>
-                            </a>
-                            <p>{{App\Vendor::find($service->vendor_id)->description}} </p>
-                        </div>
+
+                            @foreach(\App\Service::where('service_alias','=',$service->service_alias)->get() as $current_service)
+                            <div class="description">
+                                <a class="" href="{{route('service',['id' => $current_service->id])}}">{{\App\Vendor::find($current_service->vendor_id)->vendor_name}}</a>
+                            </div>
+                            @endforeach
+
                     </div>
 
 

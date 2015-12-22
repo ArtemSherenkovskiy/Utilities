@@ -17,7 +17,7 @@ use App\Http\Services;
 Route::get('/a', 'ServiceController@index');
 
 Route::get('/', ['middleware' => 'auth' , function () {
-    return view('auth/register-modal');
+    return view('test_layout');
 }]);
 
 

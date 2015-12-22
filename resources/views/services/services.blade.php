@@ -1,8 +1,8 @@
-@extends("layout")
+@extends("test_layout")
 @section("content")
-<div class="ui grid container">
-    <div class="row">
-
+    </div>
+    <div class="ui vertical segment">
+        <div class="ui very relaxed stackable centered page grid">
 
         <div class="ui button" onclick=reg()>
             Добавить услугу
@@ -10,7 +10,7 @@
         </div>
         <div class="ui modal">
             <div class="ui segment  ">
-                <div class="ui list">
+                <div class="ui bulleted list">
 
                     @foreach($services as $service)
 
@@ -21,10 +21,10 @@
                             </div>
                         </div>
                         <div class="description">
-                            <a class="" href="{{route('service',['id'=>App\Vendor::find($service->vendor_id)->id])}}">
-                            {{App\Vendor::find($service->vendor_id)->vendor_name}}
+                            <a class="" href="{{route('service',['id' => $service->id])}}">
+                           <p>{{App\Vendor::find($service->vendor_id)->vendor_name}}  </p>
                             </a>
-                            {{App\Vendor::find($service->vendor_id)->description}}
+                            <p>{{App\Vendor::find($service->vendor_id)->description}} </p>
                         </div>
                     </div>
 
@@ -33,6 +33,6 @@
                 </div>
             </div>
         </div>
-    </div>
 </div>
+    </div>
 @stop

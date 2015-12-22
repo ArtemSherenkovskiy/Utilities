@@ -157,8 +157,8 @@ class HotWaterKiyvEnergoService extends BasicService
 
     public function __construct()
     {
-        $vendor_id = Vendor::where('vendor_alias','=',self::VENDOR_ALIAS)->get()->id;
-        $this->service_id = Service::whereRaw('servise_alias = '. self::SERVICE_ALIAS . ' and vendor_id = ' . $vendor_id)->get()->id;
+        $vendor_id = Vendor::where('vendor_alias','=',self::VENDOR_ALIAS)->first()->id;
+        $this->service_id = Service::whereRaw('servise_alias = '. self::SERVICE_ALIAS . ' and vendor_id = ' . $vendor_id)->first()->id;
         if(Auth::guest())
         {
             $this->guest = true;
@@ -192,14 +192,21 @@ class HotWaterKiyvEnergoService extends BasicService
         }
         if($this->user_service_info->counter)
         {
-            $previous_history_element =  History::where('user_service_id', '=', $this->user_service_id)->max('time_period');
-            if(null === $previous_history_element)
+            $previous_time_period =  History::where('user_service_id', '=', $this->user_service_id)->max('time_period');
+            if($previous_time_period == strtotime(date('Y-m-01 00:00:00')))
+            {
+                // return message with warning that we have already calculate in this month
+            }
+            if(null == $previous_time_period)
             {
                 $previous_counter = 0;
             }
-            else
-            {
-                $previous_counter = unserialize($previous_history_element->history_item)->counter;
+            else {
+                $previous_history_element = History::whereRaw('user_service_id = ' . $this->user_service_id . ' and time_period = ' . $previous_time_period)->first();
+                if (null != $previous_history_element)
+                {
+                    $previous_counter = unserialize($previous_history_element->history_item)->counter;
+                }
             }
             $answer = ' <div class="field">
                             <label>Показания счетчика в прошлом месяце</label>
@@ -339,7 +346,7 @@ class HotWaterKiyvEnergoService extends BasicService
     {
         $history_item = new HotWaterKiyvEnergoMonthInfo($request['counter_value'], $request['consumed_value'], $request['paid_value']);
         $time = strtotime(date('Y-m-01 00:00:00'));
-        if(History::whereRaw("user_service_id = $this->user_service_id and time_period = $time")->get())
+        if(History::whereRaw("user_service_id = $this->user_service_id and time_period = $time")->first())
         {
             throw new ServiceException("Current month has been calculated");
         }

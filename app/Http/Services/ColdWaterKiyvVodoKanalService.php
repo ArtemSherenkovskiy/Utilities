@@ -137,8 +137,8 @@ class ColdWaterKiyvVodoKanalService extends BasicService
 
     public function __construct()
     {
-        $vendor_id = Vendor::where('vendor_alias','=',self::VENDOR_ALIAS)->get()->id;
-        $this->service_id = Service::whereRaw('servise_alias = '. self::SERVICE_ALIAS . ' and vendor_id = ' . $vendor_id)->get()->id;
+        $vendor_id = Vendor::where('vendor_alias','=',self::VENDOR_ALIAS)->first()->id;
+        $this->service_id = Service::whereRaw('servise_alias = '. self::SERVICE_ALIAS . ' and vendor_id = ' . $vendor_id)->first()->id;
         if(Auth::guest())
         {
             $this->guest = true;
@@ -148,16 +148,16 @@ class ColdWaterKiyvVodoKanalService extends BasicService
         {
             $this->guest = false;
             $this->user_info = Auth::user();
-            $user_services = UserService::whereRaw('user_id = '. $this->user_info->id .' and service_id = ' . $this->service_id)->get();
-            if(count($this->user_service_info) <= 0)
+            $user_service = UserService::whereRaw('user_id = '. $this->user_info->id .' and service_id = ' . $this->service_id)->first();
+            if(null == $user_service)
             {
                 $this->user_service_info = null;
                 $this->user_service_id = 0;
             }
             else
             {
-                $this->user_service_info = unserialize($user_services[0]->user_info);
-                $this->user_service_id = $user_services[0]->id;
+                $this->user_service_info = unserialize($user_service->user_info);
+                $this->user_service_id = $user_service->id;
             }
         }
     }
@@ -172,41 +172,48 @@ class ColdWaterKiyvVodoKanalService extends BasicService
         $current_hot_water = 0;
         if($this->user_service_info->hot_water_vendor != 0)
         {
-            $hot_water_services = Service::whereRaw('vendor_id = '. $this->user_service_info->hot_water_vendor . ' and service_alias = ' . self::SERVICE_ALIAS)->get();
-            if(null == $hot_water_services)
+            $hot_water_service = Service::whereRaw('vendor_id = '. $this->user_service_info->hot_water_vendor . ' and service_alias = ' . self::SERVICE_ALIAS)->first();
+            if(null == $hot_water_service)
             {
                 throw new ServiceException('Cold water KiyvVodoKanal, unknown hot water service');
             }
-            $hot_water_service_id = $hot_water_services[0]->id;
-            $hot_water_user_services = UserService::whereRaw('user_id = ' . $this->user_info->id . ' and service_id = ' . $hot_water_service_id)->get();
-            if(count($hot_water_user_services) == 0)
+            $hot_water_service_id = $hot_water_service->id;
+            $hot_water_user_service = UserService::whereRaw('user_id = ' . $this->user_info->id . ' and service_id = ' . $hot_water_service_id)->first();
+            if(null == $hot_water_user_service)
             {
                 //create layout with info, that current user doesn't have hot water service
                 // with choosen vendor
                 throw new ServiceException('Cold water KiyvVodoKanal, unknown hot water user_service');
             }
-            $hot_water_user_service_id = $hot_water_user_services[0]->id;
+            $hot_water_user_service_id = $hot_water_user_service->id;
             $time = strtotime(date('Y-m-01 00:00:00'));
-            $hot_water_histories = History::whereRaw('user_service_id = ' . $hot_water_user_service_id . 'and time_period = ' . $time)->get();
-            if(count($hot_water_histories) == 0)
+            $hot_water_history = History::whereRaw('user_service_id = ' . $hot_water_user_service_id . 'and time_period = ' . $time)->first();
+            if(null == $hot_water_history)
             {
                 //create layout that user need to calculate hot water firstly
             }
-            elseif(count($hot_water_histories) == 1)
+            elseif(count($hot_water_history) == 1)
             {
-                $current_hot_water = $hot_water_histories[0]->consumed_value;
+                $current_hot_water = $hot_water_history->consumed_value;
             }
         }
         if($this->user_service_info->counter)
         {
-            $previous_history_element =  History::where('user_service_id', '=', $this->user_service_id)->max('time_period');
-            if(null == $previous_history_element)
+            $previous_time_period =  History::where('user_service_id', '=', $this->user_service_id)->max('time_period');
+            if($previous_time_period == strtotime(date('Y-m-01 00:00:00')))
+            {
+                // return message with warning that we have already calculate in this month
+            }
+            if(null == $previous_time_period)
             {
                 $previous_counter = 0;
             }
-            else
-            {
-                $previous_counter = unserialize($previous_history_element->history_item)->counter;
+            else {
+                $previous_history_element = History::whereRaw('user_service_id = ' . $this->user_service_id . ' and time_period = ' . $previous_time_period)->first();
+                if (null != $previous_history_element)
+                {
+                    $previous_counter = unserialize($previous_history_element->history_item)->counter;
+                }
             }
             $answer = ' <div class="field">
                             <label>Показания счетчика в прошлом месяце</label>
@@ -340,7 +347,17 @@ class ColdWaterKiyvVodoKanalService extends BasicService
 
     public function safe_history($request)
     {
-        // TODO: Implement safe_history() method.
+        $history_item = new ColdWaterKiyvVodoKanalMonthInfo($request['counter_value'], $request['water_consumed'], $request['hot_water_outgoing'], $request['paid_value']);
+        $time = strtotime(date('Y-m-01 00:00:00'));
+        if(History::whereRaw("user_service_id = $this->user_service_id and time_period = $time")->first())
+        {
+            throw new ServiceException("Current month has been calculated");
+        }
+        $history = new History();
+        $history->time_period = $time;
+        $history->history_item = serialize($history_item);
+        $history->user_service_id = $this->user_service_id;
+        $history->save();
     }
 
 
@@ -367,18 +384,18 @@ class ColdWaterKiyvVodoKanalService extends BasicService
         $num_of_relief_hot_water = 0.0;
         if($this->user_service_info->hot_water_vendor != 0)
         {
-            $hot_water_services = Service::whereRaw('vendor_id = ' . $this->user_service_info->hot_water_vendor . ' and service_alias = ' . self::SERVICE_ALIAS)->get();
-            if (null == $hot_water_services) {
+            $hot_water_service = Service::whereRaw('vendor_id = ' . $this->user_service_info->hot_water_vendor . ' and service_alias = ' . self::SERVICE_ALIAS)->first();
+            if (null == $hot_water_service) {
                 throw new ServiceException('Cold water KiyvVodoKanal, unknown hot water service');
             }
-            $hot_water_service_id = $hot_water_services[0]->id;
-            $hot_water_user_services = UserService::whereRaw('user_id = ' . $this->user_info->id . ' and service_id = ' . $hot_water_service_id)->get();
-            if (count($hot_water_user_services) == 0) {
+            $hot_water_service_id = $hot_water_service->id;
+            $hot_water_user_service = UserService::whereRaw('user_id = ' . $this->user_info->id . ' and service_id = ' . $hot_water_service_id)->first();
+            if (null == $hot_water_user_service) {
                 //create layout with info, that current user doesn't have hot water service
                 // with choosen vendor
                 throw new ServiceException('Cold water KiyvVodoKanal, unknown hot water user_service');
             }
-            $hot_water_user_info = unserialize($hot_water_user_services[0]->user_info);
+            $hot_water_user_info = unserialize($hot_water_user_service->user_info);
             $relief = $hot_water_user_info->relief;
             $num_of_relief_hot_water = $hot_water_user_info->num_of_relief_hot_water;
         }
@@ -389,7 +406,31 @@ class ColdWaterKiyvVodoKanalService extends BasicService
 
     public function successful_calculate_layout($calculate_values)
     {
-        return 1;
+        $answer = '<div class="inline field">
+                        <div class="ui input">
+                            <label>Текущее значение счетчика</label>
+                            <input type="text" placeholder="Сумма" name="counter_value" value="' . $calculate_values[0] . '">
+                        </div>
+                   </div>
+                   <div class="inline field">
+                        <div class="ui input">
+                            <label>Объемы использованной холодной воды</label>
+                            <input type="text" placeholder="Сумма" name="consumed_value" value="' . $calculate_values[1] . '">
+                        </div>
+                   </div>
+                   <div class="inline field">
+                        <div class="ui input">
+                            <label>Объемы использованной горячей воды, для подсчета водоотвода</label>
+                            <input type="text" placeholder="Сумма" name="hot_water_outgoing" value="' . $calculate_values[2] . '">
+                        </div>
+                   </div>
+                   <div class="inline field">
+                        <div class="ui input">
+                            <label>Сумма счета</label>
+                            <input type="text" placeholder="Сумма" name="paid_value" value="' . $calculate_values[3] . '">
+                        </div>
+                   </div>';
+        return view('successful_calculate')->with(['result_form' => $answer]);
     }
 
     private function validate_info_request($request)

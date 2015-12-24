@@ -46,7 +46,7 @@
                         <i class="info icon"></i> О нас
                     </a>
                 @else
-                    <a class="ui animated button item">
+                    <a class="ui animated button item" href="{{route('home')}}">
                         <div class="hidden content"><i class="edit icon"></i></div>
                         <div class="visible content">Личный кабинет
                         </div>

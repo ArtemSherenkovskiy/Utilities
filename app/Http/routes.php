@@ -13,27 +13,33 @@ use App\Http\Services;
 | and give it the controller to call when that URI is requested.
 |
 */
+Route::group(['middleware'=>'auth'],function(){
+    Route::get('/a', ['as'=>'home','uses'=>'ServiceController@index']);
 
-Route::get('/a', 'ServiceController@index');
+    Route::get('/',  function () {
+        if(\Illuminate\Support\Facades\Auth::guest()) {
+            return view('auth/register-modal');
+        }
+        else
+        {
+            return redirect()->route('home');
+        }
+    });
 
-Route::get('/', ['middleware' => 'auth' , function () {
-    return view('test_layout');
-}]);
 
+    Route::get('/service{id?}', ['as' => 'service', 'uses' => 'ServiceController@getService']);
+    Route::post('service{id}/save', ['as' => 'saveService', 'uses' => 'ServiceController@store']);
+    Route::get('edit/service{service_id}', ['as' => 'editService', 'uses' => 'ServiceController@editService']);
 
-Route::get('/service{id?}', ['as'=>'service','uses'=>'ServiceController@getService']);
-Route::post('service{id}/save',['as'=>'saveService','uses'=>'ServiceController@store']);
-Route::get('edit/service{service_id}',['as' => 'editService', 'uses' => 'ServiceController@editService']);
-
-
+});
 
 // Authentication routes...
-Route::get('auth/login', ['as'=>'login','uses'=>'Auth\AuthController@getLogin']);
+
 Route::post('auth/login', ['as'=>'loginPost','uses'=>'Auth\AuthController@postLogin']);
 Route::get('auth/logout', ['as'=>'logout','uses'=>'Auth\AuthController@getLogout']);
 
 // Registration routes...
-Route::get('auth/register','Auth\AuthController@getRegister' );
+
 Route::post('auth/register', ['as'=>'register','uses'=>'Auth\AuthController@postRegister']);
 
 Route::resource('home','HomeController');

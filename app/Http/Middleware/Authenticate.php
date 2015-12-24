@@ -37,13 +37,16 @@ class Authenticate
         if ( $this->auth->guest()) {
             if ($request->ajax()) {
                 return response('Unauthorized.', 401);
-            } else {
-                return view('auth/register-modal');
+            }
+            else {
+                \Log::error('du4');
+                return redirect('/');
+
             }
         }
         else
         {
-            return redirect('a');
+            \Log::error('nu4');
         }
 
         return $next($request);

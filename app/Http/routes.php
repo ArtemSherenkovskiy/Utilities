@@ -33,8 +33,8 @@ Route::post('auth/login', ['as'=>'loginPost','uses'=>'Auth\AuthController@postLo
 Route::get('auth/logout', ['as'=>'logout','uses'=>'Auth\AuthController@getLogout']);
 
 // Registration routes...
-Route::get('auth/register', ['as'=>'register','uses'=>'Auth\AuthController@getRegister']);
-Route::post('auth/register', 'Auth\AuthController@postRegister');
+Route::get('auth/register','Auth\AuthController@getRegister' );
+Route::post('auth/register', ['as'=>'register','uses'=>'Auth\AuthController@postRegister']);
 
 Route::resource('home','HomeController');
 

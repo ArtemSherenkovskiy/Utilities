@@ -28,7 +28,7 @@ class ServiceController extends Controller
 
         $vendors = Vendor::all();
         $user_services = UserService::all();
-
+        $user_services_id = [];
         foreach($user_services as $user_service)
         {
             $user_services_id[]=$user_service->service_id;
@@ -55,7 +55,7 @@ class ServiceController extends Controller
     public function getService($id=null)
     {
         $this->service  =Services\ServiceControl::generate($id);
-        Cache::put('service',$this->service,10);
+
         view()->share('id',$id);
         return $this->service->create_user_info_view();
 

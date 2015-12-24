@@ -158,7 +158,7 @@ class HotWaterKiyvEnergoService extends BasicService
     public function __construct()
     {
         $vendor_id = Vendor::where('vendor_alias','=',self::VENDOR_ALIAS)->first()->id;
-        $this->service_id = Service::whereRaw('servise_alias = '. self::SERVICE_ALIAS . ' and vendor_id = ' . $vendor_id)->first()->id;
+        $this->service_id = Service::whereRaw('service_alias = "'. self::SERVICE_ALIAS . '" and vendor_id = ' . $vendor_id)->first()->id;
         if(Auth::guest())
         {
             $this->guest = true;
@@ -168,16 +168,18 @@ class HotWaterKiyvEnergoService extends BasicService
         {
             $this->guest = false;
             $this->user_info = Auth::user();
-            $user_services = UserService::whereRaw('user_id = ? and service_id = ?', [$this->user_info->id, $this->service_id]);
-            if(count($this->user_service_info) <= 0)
+            $user_services = UserService::whereRaw('user_id = '.$this->user_info->id.' and service_id ='.$this->service_id);
+            \Log::error('howwater'.$user_services->get());
+            if(count($user_services->get()) <= 0)
             {
                 $this->user_service_info = null;
                 $this->user_service_id = 0;
             }
             else
             {
-                $this->user_service_info = unserialize($user_services[0]->user_info);
-                $this->user_service_id = $user_services[0]->id;
+                \Log::error('else'.$user_services->get());
+                $this->user_service_info = unserialize($user_services->first()->user_info);
+                $this->user_service_id = $user_services->first()->id;
             }
         }
     }
@@ -301,7 +303,7 @@ class HotWaterKiyvEnergoService extends BasicService
             <input type="text" placeholder="Объем льготной воды в куб.м" name="num_of_relief_hot_water" value="' . ($this->user_service_info->num_of_relief_hot_water) . '">
             </div>
             </div>';
-        return view('services/create_service')->with(['layout'=> $answer]);
+        return view('services/create_service')->with(['layout'=> $answer,'id'=> $this->service_id]);
     }
 
 
@@ -323,17 +325,21 @@ class HotWaterKiyvEnergoService extends BasicService
                 $user_service->service_id = $this->service_id;
                 $user_service->user_info = serialize($this->user_service_info);
                 $user_service->save();
+                \Log::error('safenull');
             }
             else
             {
+
                 $this->user_service_info = new HotWaterKiyvEnergoUserInfo((boolean)$request['counter'], (boolean)$request['dryer'], (integer)$request['relief'], (integer)$request['num_of_relief_hot_water']);
                 $user_service = UserService::find($this->user_service_id);
                 $user_service->user_info = serialize($this->user_service_info);
                 $user_service->save();
+                \Log::error('safe');
             }
         }
         else
         {
+            \Log::error('guest');
             if(null === $this->user_service_info)
             {
                 $this->user_service_info = new HotWaterKiyvEnergoUserInfo($request['counter'], $request['dryer'], $request['relief'], $request['num_of_relief_hot_water']);

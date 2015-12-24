@@ -57,7 +57,7 @@ return [
             'host'      => 'localhost:3306',
             'database'  => 'utilities',
             'username'  => 'root',
-            'password'  => '',
+            'password'  => 'vjnjwbrk2000',
             'charset'   => 'utf8',
             'collation' => 'utf8_unicode_ci',
             'prefix'    => '',

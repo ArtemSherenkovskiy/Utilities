@@ -48,14 +48,8 @@ class ColdWaterKiyvVodoKanalUserInfo
 
 
 
-    public function __construct()
-    {
-        $this->counter = false;
-        $this->hot_water_vendor = false;
-        $this->relief = 0.0;
-        $this->num_of_relief_water = 0.0;
-    }
-    public function __construct1($counter, $hot_water_vendor, $relief, $num_of_relief_water)
+
+    public function __construct($counter = false, $hot_water_vendor = 0, $relief = 0.0, $num_of_relief_water = 0.0)
     {
         $this->counter = $counter;
         $this->hot_water_vendor = $hot_water_vendor;
@@ -278,12 +272,13 @@ class ColdWaterKiyvVodoKanalService extends BasicService
             <input type="text" placeholder="Объем льготной воды в куб.м" name="num_of_relief_water">
             </div>
             </div>';
-        return view('services/create_service')->with(['layout'=> $answer]);
+        return view('services/create_service')->with(['layout'=> $answer, 'id' => $this->service_id]);
     }
 
     public function create_user_info_view_with_info()
     {
-        $services = Service::where('service_name','=',self::HOT_WATER_ALIAS)->get();
+        $services = Service::where('service_alias','=',self::HOT_WATER_ALIAS)->get();
+        var_dump(count($services));
         $hot_water_vendors = '<option value="0" ' . ($this->user_service_info->hot_water_vendor == 0 ? 'selected' : '') . '>Нет горячей воды/Не высчитываю ее на данном сайте</option>';
         foreach($services as $service)
         {
@@ -308,21 +303,21 @@ class ColdWaterKiyvVodoKanalService extends BasicService
              </div>
             <div class="field">
             <label>Объем воды по скидке</label>
-            <input type="text" placeholder="Объем льготной воды в куб.м" name="num_of_relief_water" value="' . $this->user_service_info->num_of_relief_water . '>
+            <input type="text" placeholder="Объем льготной воды в куб.м" name="num_of_relief_water" value="' . $this->user_service_info->num_of_relief_water . '">
             </div>
             </div>';
-        return view('services/create_service')->with(['layout'=> $answer]);
+        return view('services/create_service')->with(['layout'=> $answer, 'id' => $this->service_id]);
     }
 
     public function safe($request)
     {
-        $this->validate_info_request($request);
+        $request = $this->validate_info_request($request);
         if(!$this->guest)
         {
 
             if(null === $this->user_service_info)
             {
-                $this->user_service_info = new HotWaterKiyvEnergoUserInfo((boolean)$request['counter'], (integer)$request['hot_water_vendor'], (float)$request['relief'] / 100.0, (float)$request['num_of_relief_water']);
+                $this->user_service_info = new ColdWaterKiyvVodoKanalUserInfo($request['counter'], $request['hot_water_vendor'], $request['relief'] / 100.0, $request['num_of_relief_water']);
                 $user_service = new UserService();
                 $user_service->user_id = $this->user_info->id;
                 $user_service->service_id = $this->service_id;
@@ -331,7 +326,7 @@ class ColdWaterKiyvVodoKanalService extends BasicService
             }
             else
             {
-                $this->user_service_info = new HotWaterKiyvEnergoUserInfo((boolean)$request['counter'], (integer)$request['hot_water_vendor'], (float)$request['relief'], (float)$request['num_of_relief_water']);
+                $this->user_service_info = new ColdWaterKiyvVodoKanalUserInfo($request['counter'], $request['hot_water_vendor'], $request['relief'], $request['num_of_relief_water']);
                 $user_service = UserService::find($this->user_service_id);
                 $user_service->user_info = serialize($this->user_service_info);
                 $user_service->save();
@@ -371,7 +366,7 @@ class ColdWaterKiyvVodoKanalService extends BasicService
      */
     public function calculate($info_array)
     {
-        $this->validate_calculate_request($info_array);
+        $info_array = $this->validate_calculate_request($info_array);
         if($this->user_service_info->counter)
         {
             $diff = $info_array['current_counter'] - $info_array['previous_counter'];
@@ -476,6 +471,7 @@ class ColdWaterKiyvVodoKanalService extends BasicService
         {
             $request['num_of_relief_water'] = 0;
         }
+        return $request;
     }
 
     private function validate_calculate_request($request)
@@ -526,6 +522,7 @@ class ColdWaterKiyvVodoKanalService extends BasicService
                 $request['hot_water_outgoing'] = 0.0;
             }
         }
+        return $request;
     }
 
 

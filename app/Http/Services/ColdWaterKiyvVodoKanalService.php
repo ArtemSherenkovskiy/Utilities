@@ -115,6 +115,7 @@ class ColdWaterKiyvVodoKanalMonthInfo
 class ColdWaterKiyvVodoKanalService extends BasicService
 {
     const SERVICE_ALIAS = "ColdWater";
+    const SERVICE_NAME = 'Холодная вода и водоотвод';
     const VENDOR_ALIAS = "KiyvVodoKanal";
 
     const COST_OUTGOING = 4.092;
@@ -250,7 +251,8 @@ class ColdWaterKiyvVodoKanalService extends BasicService
         {
             $hot_water_vendors .= '<option value="' . $service->vendor_id . '">' . Vendor::find($service->vendor_id)->vendor_name . '</option>';
         }
-        $answer = '<div class="inline field">
+        $answer = '<div class="header">' . self::SERVICE_NAME . '</div>
+            <div class="inline field">
             <div class="ui checkbox">
             <input type="checkbox" tabindex="0" name="counter">
             <label>У меня дома есть счетчик.</label>
@@ -278,13 +280,13 @@ class ColdWaterKiyvVodoKanalService extends BasicService
     public function create_user_info_view_with_info()
     {
         $services = Service::where('service_alias','=',self::HOT_WATER_ALIAS)->get();
-        var_dump(count($services));
         $hot_water_vendors = '<option value="0" ' . ($this->user_service_info->hot_water_vendor == 0 ? 'selected' : '') . '>Нет горячей воды/Не высчитываю ее на данном сайте</option>';
         foreach($services as $service)
         {
             $hot_water_vendors .= '<option value="' . $service->vendor_id . '" ' . ($this->user_service_info->hot_water_vendor == $service->vendor_id ? 'selected' : '') . '>' . Vendor::find($service->vendor_id)->vendor_name . '</option>';
         }
-        $answer = '<div class="inline field">
+        $answer = '<div class="header">' . self::SERVICE_NAME . '</div>
+            <div class="inline field">
             <div class="ui checkbox">
             <input type="checkbox" tabindex="0" name="counter" ' . ($this->user_service_info->counter ? 'checked' : '') . '>
             <label>У меня дома есть счетчик.</label>
@@ -299,7 +301,7 @@ class ColdWaterKiyvVodoKanalService extends BasicService
             <div class="two fields">
             <div class="field">
             <label>Скидка</label>
-             <input type="text" placeholder="Размер скидки в %" name="relief" value="' . $this->user_service_info->relief . '">
+             <input type="text" placeholder="Размер скидки в %" name="relief" value="' . $this->user_service_info->relief * 100 . '">
              </div>
             <div class="field">
             <label>Объем воды по скидке</label>
@@ -326,7 +328,7 @@ class ColdWaterKiyvVodoKanalService extends BasicService
             }
             else
             {
-                $this->user_service_info = new ColdWaterKiyvVodoKanalUserInfo($request['counter'], $request['hot_water_vendor'], $request['relief'], $request['num_of_relief_water']);
+                $this->user_service_info = new ColdWaterKiyvVodoKanalUserInfo($request['counter'], $request['hot_water_vendor'], $request['relief'] /100, $request['num_of_relief_water']);
                 $user_service = UserService::find($this->user_service_id);
                 $user_service->user_info = serialize($this->user_service_info);
                 $user_service->save();
@@ -402,7 +404,8 @@ class ColdWaterKiyvVodoKanalService extends BasicService
 
     public function successful_calculate_layout($calculate_values)
     {
-        $answer = '<div class="inline field">
+        $answer = '<div class="header">' . self::SERVICE_NAME . '</div>
+                    <div class="inline field">
                         <div class="field">
                             <label>Текущее значение счетчика</label>
                             <input type="text" placeholder="Сумма" name="counter_value" value="' . $calculate_values[0] . '">

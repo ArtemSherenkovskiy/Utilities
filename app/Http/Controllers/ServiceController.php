@@ -54,7 +54,7 @@ class ServiceController extends Controller
     {
         $this->service  = Services\ServiceControl::generate($id);
         //Cache::put('service',$this->service,10);
-        //view()->share('id',$id);
+        view()->share('id',$id);
         return $this->service->create_user_info_view();
 
     }

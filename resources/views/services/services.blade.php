@@ -34,6 +34,7 @@
             <div class="ui vertical segment  ">
                 <div class="ui very relaxed centered stackable page grid">
                 <div class="ui cards">
+                @if(count($services)>=1)
 
                     @foreach($services as $service)
 
@@ -52,6 +53,11 @@
 
 
                     @endforeach
+                    @else
+                    <div class="centered row">
+                        <h2>Вы добавили все доступные сервисы</h2>
+                    </div>
+                    @endif
                 </div>
             </div>
         </div>

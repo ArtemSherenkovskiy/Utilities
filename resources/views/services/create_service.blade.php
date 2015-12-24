@@ -1,6 +1,5 @@
 @extends("test_layout")
 @section("content")
-    </div>
 <div class="ui vertical segment">
    <div class="ui very relaxed stackable centered page grid">
 <div class="centered row">

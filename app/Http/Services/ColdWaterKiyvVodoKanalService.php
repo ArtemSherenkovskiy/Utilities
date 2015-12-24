@@ -269,11 +269,11 @@ class ColdWaterKiyvVodoKanalService extends BasicService
             '</select>
             </div>
             <div class="two fields">
-            <div class="ui input">
+            <div class="field">
             <label>Скидка</label>
              <input type="text" placeholder="Размер скидки в %" name="relief">
              </div>
-            <div class="ui input">
+            <div class="field">
             <label>Объем воды по скидке</label>
             <input type="text" placeholder="Объем льготной воды в куб.м" name="num_of_relief_water">
             </div>
@@ -302,11 +302,11 @@ class ColdWaterKiyvVodoKanalService extends BasicService
             '</select>
             </div>
             <div class="two fields">
-            <div class="ui input">
+            <div class="field">
             <label>Скидка</label>
              <input type="text" placeholder="Размер скидки в %" name="relief" value="' . $this->user_service_info->relief . '">
              </div>
-            <div class="ui input">
+            <div class="field">
             <label>Объем воды по скидке</label>
             <input type="text" placeholder="Объем льготной воды в куб.м" name="num_of_relief_water" value="' . $this->user_service_info->num_of_relief_water . '>
             </div>
@@ -408,25 +408,25 @@ class ColdWaterKiyvVodoKanalService extends BasicService
     public function successful_calculate_layout($calculate_values)
     {
         $answer = '<div class="inline field">
-                        <div class="ui input">
+                        <div class="field">
                             <label>Текущее значение счетчика</label>
                             <input type="text" placeholder="Сумма" name="counter_value" value="' . $calculate_values[0] . '">
                         </div>
                    </div>
                    <div class="inline field">
-                        <div class="ui input">
+                        <div class="field">
                             <label>Объемы использованной холодной воды</label>
                             <input type="text" placeholder="Сумма" name="consumed_value" value="' . $calculate_values[1] . '">
                         </div>
                    </div>
                    <div class="inline field">
-                        <div class="ui input">
+                        <div class="field">
                             <label>Объемы использованной горячей воды, для подсчета водоотвода</label>
                             <input type="text" placeholder="Сумма" name="hot_water_outgoing" value="' . $calculate_values[2] . '">
                         </div>
                    </div>
                    <div class="inline field">
-                        <div class="ui input">
+                        <div class="field">
                             <label>Сумма счета</label>
                             <input type="text" placeholder="Сумма" name="paid_value" value="' . $calculate_values[3] . '">
                         </div>

@@ -26,18 +26,16 @@ class ServiceController extends Controller
         //
         //\Log::error($userServices);
 
-        $vendors = Vendor::all();
         $user_services = UserService::all();
-
+        $user_services_id = [];
         foreach($user_services as $user_service)
         {
             $user_services_id[]=$user_service->service_id;
         }
-        $services =  Service::whereNotIn('id',$user_services_id)->get();
+        $services =  Service::whereNotIn('id',$user_services_id)->groupBy('service_alias')->orderBy('service_name', 'asc')->get();
 
         //\Log::error($vendors);
-         return view('services/services')->with(['services'=>$services,'vendors'=>$vendors,'user_services'=>$user_services]);
-        //return $services;
+         return view('services/services')->with(['services'=>$services,'user_services'=>$user_services]);
 
     }
 
@@ -54,9 +52,9 @@ class ServiceController extends Controller
 
     public function getService($id=null)
     {
-        $this->service  =Services\ServiceControl::generate($id);
-        Cache::put('service',$this->service,10);
-        view()->share('id',$id);
+        $this->service  = Services\ServiceControl::generate($id);
+        //Cache::put('service',$this->service,10);
+        //view()->share('id',$id);
         return $this->service->create_user_info_view();
 
     }
@@ -73,7 +71,7 @@ class ServiceController extends Controller
         // $service_name = DB::select('SELECT service_alias,vendor_alias from user_service JOIN vendors where user_service.id ='.$id,';');
 
         $this->service  =Services\ServiceControl::generate($request->input('id'));
-        $this->service->safe($request);
+        $this->service->safe($request->input());
         return  redirect('/');
     }
 

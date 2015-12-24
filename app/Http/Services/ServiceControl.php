@@ -52,7 +52,7 @@ class ServiceControl
                 $vendorName = 'App\Http\Services\\' . $arrFromDbAnswer['service_alias']. $arrFromDbAnswer['vendor_alias'] . 'Service';
                 $bv = new $vendorName($id);
                 //$bv->create_user_info();
-                return $bv->create_user_info_view();
+                return $bv;
 
             }
             else

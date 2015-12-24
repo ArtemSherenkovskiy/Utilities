@@ -43,13 +43,11 @@
                                 <p>{{$service['service_name']}}</p>
                             </div>
                         </div>
-                        <div class="description">
-
-                                        <p>{{App\Vendor::find($service->vendor_id)->description}} </p>
-                        </div>
-                        <a class="ui inverted bottom attached red button" href="{{route('service',['id' => $service->id])}}">
-                            <p>{{App\Vendor::find($service->vendor_id)->vendor_name}}  </p>
+                        @foreach(\App\Service::where('service_alias', '=', $service->service_alias)->get() as $service_with_alias)
+                        <a class="ui inverted bottom attached red button" href="{{route('service',['id' => $service_with_alias->id])}}">
+                            <p>{{App\Vendor::find($service_with_alias->vendor_id)->vendor_name}}  </p>
                         </a>
+                        @endforeach
                     </div>
 
 

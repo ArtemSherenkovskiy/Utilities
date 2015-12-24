@@ -115,7 +115,7 @@
             <div class="column">
                 <h5 class="ui inverted header">Designed By</h5>
                 <addr>
-                    <h1 id="logo">PIZTEK</h1>
+                    <h1 id="logo">PizTech</h1>
 
                 </addr>
 

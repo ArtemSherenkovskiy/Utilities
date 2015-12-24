@@ -5,7 +5,7 @@
         <div class="content">
 
            <div class="ui segment">
-               <form class="ui form" method="post" action="{{route('register')}}">
+               <form class="ui form error" method="post" id="register" action="{{route('register')}}">
                    {!! csrf_field() !!}
                    <div class="two fields">
                        <div class="field">
@@ -38,6 +38,7 @@
                        <label>Площадь квартиры</label>
                        <input type="number" name="flat_square">
                    </div>
+
                    <button type="submit" class="ui button">Продолжить</button>
                </form>
            </div>

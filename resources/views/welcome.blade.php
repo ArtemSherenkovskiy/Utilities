@@ -109,97 +109,36 @@
             <div class="row">
                 <div class="eight wide centered column">
                     <h1 class="center aligned ui inverted header">
-                        Recent Works
+                        Популярные сервисы
                     </h1>
                     <div class="ui horizontal divider"><i class="white flaticon-camera icon"></i></div>
-                    <p class="ui centered lead">Checkout Our Recently Completed Works<br>you will be amazed!.</p>
+                    <p class="ui centered lead">Прочитайте о сервисах</p>
                 </div>
             </div>
             <div class="fourteen wide column">
-                <div class="ui three column aligned stackable divided grid">
+                <div class="ui three column divided grid">
 
 
-
+                    @foreach(App\Service::all()->take(3) as $service)
                     <div class="column">
 
-                        <div class="ui card" data-html="<div class='header'>User Rating</div><div class='content'><div class='ui star rating'><i class='active icon'></i><i class='active icon'></i><i class='active icon'></i><i class='icon'></i><i class='icon'></i></div></div>">
-                            <div class="image">
-                                <img src="images/totoro-horizontal.jpg">
-                            </div>
+                        <div class="ui card">
+
                             <div class="content">
-                                <div class="header">My Neighbor Totoro</div>
+                                <div class="header">{{$service->service_name}}</div>
                                 <div class="description">
-                                    Two sisters move to the country with their father in order to be closer to their hospitalized mother, and discover the surrounding trees are inhabited by magical spirits.
+                                    {{$service->description}}
                                 </div>
                             </div>
-                            <div class="ui two bottom attached buttons">
-                                <div class="ui button">
-                                    <i class="flaticon-plus icon"></i>
-                                    Queue
-                                </div>
-                                <div class="ui pink button">
-                                    <i class="flaticon-play icon"></i>
-                                    Watch
-                                </div>
-                            </div>
+
                         </div>
 
                     </div>
+                        @endforeach
 
 
 
-                    <div class="column">
 
-                        <div class="ui card" data-html="<div class='header'>User Rating</div><div class='content'><div class='ui star rating'><i class='active icon'></i><i class='active icon'></i><i class='active icon'></i><i class='icon'></i><i class='icon'></i></div></div>">
-                            <div class="image">
-                                <img src="images/totoro-horizontal.jpg">
-                            </div>
-                            <div class="content">
-                                <div class="header">My Neighbor Totoro</div>
-                                <div class="description">
-                                    Two sisters move to the country with their father in order to be closer to their hospitalized mother, and discover the surrounding trees are inhabited by magical spirits.
-                                </div>
-                            </div>
-                            <div class="ui two bottom attached buttons">
-                                <div class="ui button">
-                                    <i class="flaticon-plus icon"></i>
-                                    Queue
-                                </div>
-                                <div class="ui pink button">
-                                    <i class="flaticon-play icon"></i>
-                                    Watch
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-
-
-                    <div class="column">
-
-                        <div class="ui card" data-html="<div class='header'>User Rating</div><div class='content'><div class='ui star rating'><i class='active icon'></i><i class='active icon'></i><i class='active icon'></i><i class='icon'></i><i class='icon'></i></div></div>">
-                            <div class="image">
-                                <img src="images/totoro-horizontal.jpg">
-                            </div>
-                            <div class="content">
-                                <div class="header">My Neighbor Totoro</div>
-                                <div class="description">
-                                    Two sisters move to the country with their father in order to be closer to their hospitalized mother, and discover the surrounding trees are inhabited by magical spirits.
-                                </div>
-                            </div>
-                            <div class="ui two bottom attached buttons">
-                                <div class="ui button">
-                                    <i class="flaticon-plus icon"></i>
-                                    Queue
-                                </div>
-                                <div class="ui pink button">
-                                    <i class="flaticon-play icon"></i>
-                                    Watch
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
 
 
 

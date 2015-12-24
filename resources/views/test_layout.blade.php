@@ -9,15 +9,15 @@
     <!-- Site Properities -->
     <title>Рассчет услуг</title>
 
-    <link rel="stylesheet" type="text/css" href="semantic/semantic.css">
-    <link rel="stylesheet" type="text/css" href="css/homepage.css">
+    <link rel="stylesheet" type="text/css" href={{url("semantic/semantic.css")}}>
+    <link rel="stylesheet" type="text/css" href={{url("css/homepage.css")}}>
     <link rel="stylesheet" type="text/css" href="iconfonts/flaticon.css">
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href={{url("css/style.css")}}>
 
     <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.js"></script>
-    <script src="semantic/semantic.js"></script>
-    <script src="script/homepage.js"></script>
-    <script src="script/scripts.js"></script>
+    <script src={{url("semantic/semantic.js")}}></script>
+    <script src={{url("script/homepage.js")}}></script>
+    <script src={{url("script/scripts.js")}}></script>
     <script>
         $(function(){
             $('.ui.card').popup();
@@ -87,16 +87,16 @@
     <div class="ui stackable center aligned page grid">
         <div class="four column row">
 
+
             <div class="column">
-                <h5 class="ui inverted header">Courses</h5>
+                <h5 class="ui inverted header">Авторы</h5>
                 <div class="ui inverted link list">
-                    <a class="item">Registration</a>
-                    <a class="item">Course Calendar</a>
-                    <a class="item">Professors</a>
+                    <a class="item">Аззуз</a>
+                    <a class="item">Шеренковский</a>
+                    <a class="item">Бужак</a>
                 </div>
-            </div>
-            <div class="column">
-                <h5 class="ui inverted header">Library</h5>
+            </div> <div class="column">
+                <h5 class="ui inverted header">Сервисы</h5>
                 <div class="ui inverted link list">
                     <a class="item">A-Z</a>
                     <a class="item">Most Popular</a>
@@ -104,20 +104,19 @@
                 </div>
             </div>
             <div class="column">
-                <h5 class="ui inverted header">Community</h5>
+                <h5 class="ui inverted header">Сообщества</h5>
                 <div class="ui inverted link list">
-                    <a class="item">BBS</a>
-                    <a class="item">Careers</a>
-                    <a class="item">Privacy Policy</a>
+                    <a class="item">facebook</a>
+                    <a class="item">twitter</a>
+                    <a class="item">google</a>
                 </div>
             </div>
 
             <div class="column">
                 <h5 class="ui inverted header">Designed By</h5>
                 <addr>
-                    <a class="item" href="http://scripteden.com"><img src="images/scripteden-logo-g.png" alt="Logo" style="height:20px" /></a>  <br/>
-                    <a href="http://scripteden.com/downloads/bootstrap/">Bootstrap Templates</a>           <br/>
-                    <a href="http://scripteden.com/downloads/semantic-ui/">Semantic UI Templates</a>
+                    <h1 id="logo">PIZTEK</h1>
+
                 </addr>
 
 

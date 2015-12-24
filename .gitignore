@@ -1,3 +1,4 @@
 #ignore database conf file
 config/database.php
 .idea/*
+.tsoorin/*

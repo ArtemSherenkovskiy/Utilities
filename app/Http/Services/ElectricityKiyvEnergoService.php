@@ -9,7 +9,14 @@
 namespace App\Http\Services;
 
 
-use App\Http\Services\BasicService;
+use App\History;
+use App\Service;
+use App\User;
+use App\UserService;
+use App\Vendor;
+use DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\View;
 
 class ElectricityKiyvEnergoUserInfo
 {
@@ -75,20 +82,6 @@ class ElectricityKiyvEnergoUserInfo
     public $common_metric_hostel;
 
 
-
-
-    public function __constructor()
-    {
-        $this->location = true;
-        $this->electric_cooker = true;
-        $this->relief = 0.0;
-        $this->num_of_relief_energy = 0;
-        $this->heat_supply = true;
-        $this->child_support = false;
-        $this->common_metric = false;
-        $this->common_metric = false;
-    }
-
     /**
      * ElectricityInfo constructor.
      * @param $location
@@ -100,7 +93,7 @@ class ElectricityKiyvEnergoUserInfo
      * @param $common_metric
      * @param $common_metric_hostel
      */
-    public function __construct1($location, $electric_cooker, $relief, $num_of_relief_energy, $heat_supply, $child_support, $common_metric, $common_metric_hostel)
+    public function __construct($location = true, $electric_cooker = false, $relief = 0.0, $num_of_relief_energy = 0.0, $heat_supply = true, $child_support = false, $common_metric = false, $common_metric_hostel = false)
     {
         $this->location = $location;
         $this->electric_cooker = $electric_cooker;
@@ -129,6 +122,19 @@ class ElectricityKiyvEnergoMonthInfo
      * value of money you paid that month
      */
     public $paid_value;
+
+    /**
+     * ElectricityKiyvEnergoMonthInfo constructor.
+     * @param $counter_value
+     * @param $paid_value
+     */
+    public function __construct($counter_value, $paid_value)
+    {
+        $this->counter_value = $counter_value;
+        $this->paid_value = $paid_value;
+    }
+
+
 }
 
 
@@ -153,20 +159,41 @@ class ElectricityKiyvEnergoService extends BasicService
     const MAX_THIRD = 3600.0;
 
     private $user_info;
+    private $user_service_info;
+    private $user_service_id;
+    private $guest;
 
     public function __construct()
     {
-        $this->user_info = new ElectricityKiyvEnergoUserInfo();
+        $vendor_id = Vendor::where('vendor_alias','=',self::VENDOR_ALIAS)->first()->id;
+        $this->service_id = Service::whereRaw('service_alias = \''. self::SERVICE_ALIAS . '\' and vendor_id = ' . $vendor_id)->first()->id;
+        if(Auth::guest())
+        {
+            $this->guest = true;
+            $this->user_service_info = null;
+        }
+        else
+        {
+            $this->guest = false;
+            $this->user_info = Auth::user();
+            $user_service = UserService::whereRaw('user_id = ' . $this->user_info->id . ' and service_id = ' . $this->service_id)->first();
+            if(null === $user_service)
+            {
+                $this->user_service_info = null;
+                $this->user_service_id = 0;
+            }
+            else
+            {
+                $this->user_service_info = unserialize($user_service->user_info);
+                $this->user_service_id = $user_service->id;
+            }
+        }
     }
 
     /**
      * ElectricityVendor constructor.
      * @param $user_info
      */
-    public function __construct1(ElectricityKiyvEnergoUserInfo $user_info)
-    {
-        $this->user_info = $user_info;
-    }
 
 
     public function before_calculate_layout()
@@ -181,7 +208,8 @@ class ElectricityKiyvEnergoService extends BasicService
 
     public function create_user_info_view()
     {
-        $answer = '<div class="inline field">
+        $answer = '<div class="header">' . self::SERVICE_NAME . '>
+            <div class="inline field">
             <div class="ui checkbox">
             <input type="checkbox" name="location">
             <label>Я живу в городе или ПГТ.</label>
@@ -218,24 +246,98 @@ class ElectricityKiyvEnergoService extends BasicService
             </div>
             </div>
             <div class="two fields">
-            <div class="ui input">
-             <input type="text" placeholder="Размер скидки в %">
+            <div class="field">
+             <input type="text" placeholder="Размер скидки в %" name="relief">
              </div>
-            <div class="ui input">
-            <input type="text" placeholder="Объем льготной воды в куб.м">
+            <div class="field">
+            <input type="text" placeholder="Объем льготной воды в куб.м" name="num_of_relief_energy">
             </div>
             </div>';
-        return view('services/create_service')->with(['layout'=> $answer]);
+        return view('services/create_service')->with(['layout'=> $answer, 'id' => $this->service_id]);
     }
 
     public function create_user_info_view_with_info()
     {
-        // TODO: Implement create_user_info_view_with_info() method.
+        $answer = '<div class="header">' . self::SERVICE_NAME . '>
+            <div class="inline field">
+            <div class="ui checkbox">
+            <input type="checkbox" name="location" ' . ($this->user_service_info->location ? 'checked' : '') . '>
+            <label>Я живу в городе или ПГТ.</label>
+            </div>
+            </div>
+            <div class="inline field">
+            <div class="ui checkbox">
+            <input type="checkbox" name="electric_cooker" ' . ($this->user_service_info->electric_cooker ? 'checked' : '') . '>
+            <label>У меня дома электроплита.</label>
+            </div>
+            </div>
+            <div class="inline field">
+            <div class="ui checkbox">
+            <input type="checkbox" name="heat_supply" ' . ($this->user_service_info->heat_supply ? 'checked' : '') . '>
+            <label>У меня дома электроотопление/отсутствует центральное отпление.</label>
+            </div>
+            </div>
+            <div class="inline field">
+            <div class="ui checkbox">
+            <input type="checkbox" name="child_support" ' . ($this->user_service_info->child_support ? 'checked' : '') . '>
+            <label>Мы многодетная семья.</label>
+            </div>
+            </div>
+            <div class="inline field">
+            <div class="ui checkbox">
+            <input type="checkbox" name="common_metric" ' . ($this->user_service_info->common_metric ? 'checked' : '') . '>
+            <label>Мой дом рассчитывается с энергоснабжающей организацией по общему расчетному прибору учета.</label>
+            </div>
+            </div>
+            <div class="inline field">
+            <div class="ui checkbox">
+            <input type="checkbox" name="common_metric_hostel" ' . ($this->user_service_info->common_metric_hostel ? 'checked' : '') . '>
+            <label>Общежитиям (подпадающим под определение «население, которое рассчитывается с энергоснабжающей организацией по общему расчетному прибору учета»)</label>
+            </div>
+            </div>
+            <div class="two fields">
+            <div class="field">
+             <input type="text" placeholder="Размер скидки в %" name="relief" value="' . $this->user_service_info->relief * 100 . '">
+             </div>
+            <div class="field">
+            <input type="text" placeholder="Объем льготной воды в куб.м" name="num_of_relief_energy" value="' . $this->user_service_info->num_of_relief_energy . '">
+            </div>
+            </div>';
+        return view('services/create_service')->with(['layout'=> $answer, 'id' => $this->service_id]);
     }
 
     public function safe($request)
     {
-        // TODO: Implement safe() method.
+        $request = $this->validate_info_request($request);
+        if(!$this->guest)
+        {
+            if(null === $this->user_service_info)
+            {
+                $this->user_service_info = new ElectricityKiyvEnergoUserInfo($request['location'], $request['electric_cooker'], $request['relief']  / 100.0, $request['num_of_relief_energy'], $request['heat_supply'], $request['child_support'], $request['common_metric'], $request['common_metric_hostel']);
+                $user_service = new UserService();
+                $user_service->user_id = $this->user_info->id;
+                $user_service->service_id = $this->service_id;
+                $user_service->user_info = serialize($this->user_service_info);
+                var_dump($request);
+                var_dump($this->user_service_info);
+                $user_service->save();
+            }
+            else
+            {
+                $this->user_service_info = new ElectricityKiyvEnergoUserInfo($request['location'], $request['electric_cooker'], $request['relief']  / 100.0, $request['num_of_relief_energy'], $request['heat_supply'], $request['child_support'], $request['common_metric'], $request['common_metric_hostel']);
+                $user_service = UserService::find($this->user_service_id);
+                $user_service->user_info = serialize($this->user_service_info);
+                $user_service->save();
+            }
+        }
+        else
+        {
+            if(null === $this->user_service_info)
+            {
+                $this->user_service_info = new HotWaterKiyvEnergoUserInfo($request['counter'], $request['dryer'], $request['relief'], $request['num_of_relief_hot_water']);
+            }
+        }
+
     }
 
     public function safe_history($request)
@@ -389,5 +491,74 @@ class ElectricityKiyvEnergoService extends BasicService
         return (($energy_used <= $this->user_info->num_of_relief_energy) ? $energy_used : $this->user_info->num_of_relief_energy) * $cost * $this->user_info->relief;
     }
 
+    private function validate_info_request($request)
+    {
+        if(array_key_exists('location', $request))
+        {
+            $request['location'] = true;
+        }
+        else
+        {
+            $request['location'] = false;
+        }
+        if(array_key_exists('electric_cooker', $request))
+        {
+            $request['electric_cooker'] = true;
+        }
+        else
+        {
+            $request['electric_cooker'] = false;
+        }
+        if(array_key_exists('relief', $request))
+        {
+            $request['relief'] = (float)$request['relief'];
+        }
+        else
+        {
+            $request['relief'] = 0;
+        }
+        if(array_key_exists('num_of_relief_energy', $request))
+        {
+            $request['num_of_relief_energy'] = (float)$request['num_of_relief_energy'];
+        }
+        else
+        {
+            $request['num_of_relief_energy'] = 0;
+        }
+        if(array_key_exists('heat_supply', $request))
+        {
+            $request['heat_supply'] = true;
+        }
+        else
+        {
+            $request['heat_supply'] = false;
+        }
+        if(array_key_exists('child_support', $request))
+        {
+            $request['child_support'] = true;
+        }
+        else
+        {
+            $request['child_support'] = false;
+        }
+        if(array_key_exists('common_metric', $request))
+        {
+            $request['common_metric'] = true;
+        }
+        else
+        {
+            $request['common_metric'] = false;
+        }
+        if(array_key_exists('common_metric_hostel', $request))
+        {
+            $request['common_metric_hostel'] = true;
+        }
+        else
+        {
+            $request['common_metric_hostel'] = false;
+        }
+        return $request;
+
+    }
 
 }

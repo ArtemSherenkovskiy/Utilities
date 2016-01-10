@@ -116,6 +116,7 @@ class HotWaterKiyvEnergoService extends BasicService
      * id of service in DB
      */
     const SERVICE_ALIAS = 'HotWater';
+    const SERVICE_NAME = 'Горячая Вода';
     const VENDOR_ALIAS = 'KiyvEnergo';
 
     const COST_WITH_DRYER = 40.92;
@@ -169,16 +170,16 @@ class HotWaterKiyvEnergoService extends BasicService
         {
             $this->guest = false;
             $this->user_info = Auth::user();
-            $user_services = UserService::whereRaw('user_id = ' . $this->user_info->id . ' and service_id = ' . $this->service_id)->get()  ;
-            if(count($user_services) <= 0)
+            $user_service = UserService::whereRaw('user_id = ' . $this->user_info->id . ' and service_id = ' . $this->service_id)->first()  ;
+            if(null === $user_service)
             {
                 $this->user_service_info = null;
                 $this->user_service_id = 0;
             }
             else
             {
-                $this->user_service_info = unserialize($user_services[0]->user_info);
-                $this->user_service_id = $user_services[0]->id;
+                $this->user_service_info = unserialize($user_service->user_info);
+                $this->user_service_id = $user_service->id;
             }
         }
     }
@@ -209,7 +210,7 @@ class HotWaterKiyvEnergoService extends BasicService
                     $previous_counter = unserialize($previous_history_element->history_item)->counter;
                 }
             }
-            $answer = ' <div class="header">Горячая вода</div>
+            $answer = ' <div class="header">' . self::SERVICE_NAME . '</div>
                         <div class="field">
                             <label>Показания счетчика в прошлом месяце</label>
                             <input type="text" name="previous_counter" value="' . $previous_counter . '">
@@ -243,7 +244,7 @@ class HotWaterKiyvEnergoService extends BasicService
 
     public function create_user_info_view()
     {
-        $answer = '<div class="header">Горячая вода</div>
+        $answer = '<div class="header">' . self::SERVICE_NAME . '</div>
             <div class="inline field">
             <div class="ui checkbox">
             <input type="checkbox" name="counter">
@@ -282,7 +283,7 @@ class HotWaterKiyvEnergoService extends BasicService
         {
             throw new ServiceException("Error in HotWaterKiyvEnergo with null user_service_info variable");
         }
-        $answer = '<div class="header">Горячая вода</div>
+        $answer = '<div class="header">' . self::SERVICE_NAME . '</div>
             <div class="inline field">
             <div class="ui checkbox">
             <input type="checkbox" name="counter"' . ($this->user_service_info->counter ? "checked" : "") . '>
@@ -298,7 +299,7 @@ class HotWaterKiyvEnergoService extends BasicService
             <div class="two fields">
             <div class="field">
              <label>Скидка</label>
-             <input type="text" placeholder="Размер скидки в %" name="relief" value="' . ($this->user_service_info->relief) . '">
+             <input type="text" placeholder="Размер скидки в %" name="relief" value="' . ($this->user_service_info->relief * 100) . '">
              </div>
             <div class="field">
             <label>Объкмы льготной воды</label>
@@ -332,7 +333,7 @@ class HotWaterKiyvEnergoService extends BasicService
             }
             else
             {
-                $this->user_service_info = new HotWaterKiyvEnergoUserInfo((boolean)$request['counter'], (boolean)$request['dryer'], (float)$request['relief'], (float)$request['num_of_relief_hot_water']);
+                $this->user_service_info = new HotWaterKiyvEnergoUserInfo($request['counter'], $request['dryer'], $request['relief'] / 100.0, $request['num_of_relief_hot_water']);
                 $user_service = UserService::find($this->user_service_id);
                 $user_service->user_info = serialize($this->user_service_info);
                 $user_service->save();
@@ -393,7 +394,7 @@ class HotWaterKiyvEnergoService extends BasicService
 
     public function successful_calculate_layout($calculate_values)
     {
-        $answer = '<div class="header">Горячая вода</div>
+        $answer = '<div class="header">' . self::SERVICE_NAME . '</div>
                     <div class="inline field">
                         <div class="field">
                             <label>Текущее значение счетчика</label>

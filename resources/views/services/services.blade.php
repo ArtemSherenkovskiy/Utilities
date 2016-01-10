@@ -14,7 +14,7 @@
                     </div>
                     @foreach($user_services->where('user_id',\Auth::user()->id)  as $userService )
 
-                        <a class="ui inverted red huge button" href="{{route('editService',['id'=>$userService->service_id])}}">
+                        <a class="ui inverted red huge button" href="{{route('workWithService',['id'=>$userService->service_id])}}">
                             {{App\Service::where('id',$userService->service_id)->first()['service_name']}}
                         </a>
                     @endforeach

@@ -104,12 +104,30 @@ class ServiceController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  int  $service_id
      * @return \Illuminate\Http\Response
      */
+    public function workWithService($service_id)
+    {
+
+        return view('services/work_with_service')->with('service_id',$service_id);
+
+    }
+    public function beforeCalculate($service_id)
+    {
+        $this->service = Services\ServiceControl::generate($service_id);
+        view()->share('service_id',$service_id);
+        return $this->service->before_calculate_layout();
+    }
+
     public function update(Request $request, $id)
     {
         //
+    }
+    public function calculate(Request $request)
+    {
+        $this->service = Services\ServiceControl::generate($request->input('id'));
+        return $this->service->calculate($request->input());
     }
 
     /**

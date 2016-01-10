@@ -192,6 +192,7 @@ class HotWaterKiyvEnergoService extends BasicService
         {
             throw new ServiceException("Hot water KiyvEnergo, before_calculate_layout is null");
         }
+        var_dump($this->user_service_info);
         if($this->user_service_info->counter)
         {
             $previous_time_period =  History::where('user_service_id', '=', $this->user_service_id)->max('time_period');
@@ -346,6 +347,7 @@ class HotWaterKiyvEnergoService extends BasicService
                 $this->user_service_info = new HotWaterKiyvEnergoUserInfo($request['counter'], $request['dryer'], $request['relief'], $request['num_of_relief_hot_water']);
             }
         }
+        var_dump($this->user_service_info);
 
     }
 
@@ -371,49 +373,63 @@ class HotWaterKiyvEnergoService extends BasicService
      */
     public function calculate($info_array)
     {
+        var_dump($this->user_service_info);
         $info_array = $this->validate_calculate_request($info_array);
-        $current_counter = $info_array;
         if($this->user_service_info->counter)
         {
-            $diff = $info_array['previous_counter'] - $info_array['current_counter'];
+            $current_counter = $info_array['current_counter'];
+            $diff = $info_array['current_counter'] - $info_array['previous_counter'];
         }
         else
         {
             $diff = $info_array['water_volume'];
         }
-        $diff_with_relief = $diff - ($this->user_info->num_of_relief_hot_water < $diff ? $this->user_info->num_of_relief_hot_water : $diff) * $this->user_info->relief;
-        if($this->user_info->dryer)
+        $diff_with_relief = $diff - ($this->user_service_info->num_of_relief_hot_water < $diff ? $this->user_service_info->num_of_relief_hot_water : $diff) * $this->user_service_info->relief;
+        if($this->user_service_info->dryer)
         {
             $cost = $diff_with_relief * self::COST_WITH_DRYER;
         } else
         {
             $cost = $diff_with_relief * self::COST_WITHOUT_DRYER;
         }
-        return $this->successful_calculate_layout([$current_counter, $diff, $cost]);
+        var_dump($info_array);
+        if($this->user_service_info->counter)
+        {
+            return $this->successful_calculate_layout(array($diff, $cost, $current_counter));
+        }
+        else
+        {
+            return $this->successful_calculate_layout(array($diff, $cost));
+        }
     }
 
     public function successful_calculate_layout($calculate_values)
     {
-        $answer = '<div class="header">' . self::SERVICE_NAME . '</div>
-                    <div class="inline field">
+        var_dump($calculate_values[0]);
+        $answer = '<div class="header">' . self::SERVICE_NAME . '</div>';
+        if($this->user_service_info->counter)
+        {
+                    $answer = $answer .
+                    '<div class="inline field">
                         <div class="field">
                             <label>Текущее значение счетчика</label>
-                            <input type="text" placeholder="Сумма" name="counter_value" value="' . $calculate_values[0] . '">
+                            <input type="text" placeholder="Сумма" name="counter_value" value="' . $calculate_values[2] . '">
                         </div>
-                   </div>
-                   <div class="inline field">
+                   </div>';
+        }
+                   $answer = $answer . '<div class="inline field">
                         <div class="field">
                             <label>Объемы использованной воды</label>
-                            <input type="text" placeholder="Сумма" name="consumed_value" value="' . $calculate_values[1] . '">
+                            <input type="text" placeholder="Сумма" name="consumed_value" value="' . $calculate_values[0] . '">
                         </div>
                    </div>
                    <div class="inline field">
                         <div class="field">
                             <label>Сумма счета</label>
-                            <input type="text" placeholder="Сумма" name="paid_value" value="' . $calculate_values[2] . '">
+                            <input type="text" placeholder="Сумма" name="paid_value" value="' . $calculate_values[1] . '">
                         </div>
                    </div>';
-       return view('successful_calculate')->with(['result_form' => $answer]);
+       return view('services/successful_calculate')->with(['result_form' => $answer]);
     }
 
     private function validate_calculate_request($request)

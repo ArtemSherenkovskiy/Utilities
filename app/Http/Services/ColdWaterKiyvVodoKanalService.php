@@ -120,7 +120,8 @@ class ColdWaterKiyvVodoKanalService extends BasicService
 
     const COST_OUTGOING = 4.092;
     const COST_WATER = 4.596;
-    const COST_WATER_WITH_OUTGOING = self::COST_OUTGOING + self::COST_WATER;
+    const COST_WATER_WITH_OUTGOING = 4.092 + 4.596;
+    //const COST_WATER_WITH_OUTGOING = self::COST_OUTGOING + self::COST_WATER;
     const HOT_WATER_ALIAS = "HotWater";
 
 
@@ -429,7 +430,7 @@ class ColdWaterKiyvVodoKanalService extends BasicService
                             <input type="text" placeholder="Сумма" name="paid_value" value="' . $calculate_values[3] . '">
                         </div>
                    </div>';
-        return view('successful_calculate')->with(['result_form' => $answer]);
+        return view('services/successful_calculate')->with(['result_form' => $answer]);
     }
 
     private function validate_info_request($request)

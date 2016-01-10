@@ -124,14 +124,22 @@ class ElectricityKiyvEnergoMonthInfo
     public $paid_value;
 
     /**
+     * @var
+     * value of energy consumed that month
+     */
+    public $energy_consumed_value;
+
+    /**
      * ElectricityKiyvEnergoMonthInfo constructor.
      * @param $counter_value
      * @param $paid_value
+     * @param $energy_consumed_value
      */
-    public function __construct($counter_value, $paid_value)
+    public function __construct($counter_value, $paid_value, $energy_consumed_value)
     {
         $this->counter_value = $counter_value;
         $this->paid_value = $paid_value;
+        $this->energy_consumed_value = $energy_consumed_value;
     }
 
 
@@ -149,6 +157,7 @@ class ElectricityKiyvEnergoService extends BasicService
     const VENDOR_NAME = "КиевЭнерго";
 
 
+    // цены в копейках
     const COST_FIRST = 45.60;
     const COST_SECOND = 78.90;
     const COST_THIRD = 147.90;
@@ -198,7 +207,39 @@ class ElectricityKiyvEnergoService extends BasicService
 
     public function before_calculate_layout()
     {
+        if($this->user_service_info === null)
+        {
+            throw new ServiceException("Electricity KiyvEnergo, before_calculate_layout is null");
+        }
+        var_dump($this->user_service_info);
 
+            $previous_time_period =  History::where('user_service_id', '=', $this->user_service_id)->max('time_period');
+            if($previous_time_period == strtotime(date('Y-m-01 00:00:00')))
+            {
+                // return message with warning that we have already calculate in this month
+            }
+            if(null == $previous_time_period)
+            {
+                $previous_counter = 0;
+            }
+            else {
+                $previous_history_element = History::whereRaw('user_service_id = ' . $this->user_service_id . ' and time_period = ' . $previous_time_period)->first();
+                if (null != $previous_history_element)
+                {
+                    $previous_counter = unserialize($previous_history_element->history_item)->counter;
+                }
+            }
+            $answer = ' <div class="header">' . self::SERVICE_NAME . '</div>
+                        <div class="field">
+                            <label>Показания счетчика в прошлом месяце</label>
+                            <input type="text" name="previous_counter" value="' . $previous_counter . '">
+                        </div>
+                        <div class="field">
+                            <label>Текущие показания счетчика</label>
+                            <input type="text" name="current_counter" value="' . $previous_counter . '">
+                        </div>';
+
+        return view('services/before_calculate')->with(['input_form' => $answer]);
     }
 
     public function info()
@@ -345,21 +386,16 @@ class ElectricityKiyvEnergoService extends BasicService
         // TODO: Implement safe_history() method.
     }
 
-    /**
-     * @param $counter_values_array
-     * $counter_values_array[0] must contains last month counter value
-     * $counter_values_array[1] must contains current counter value
-     * @return int
-     * return costs of used energy
-     *
-     */
-    public function calculate($counter_values_array)
+
+    public function calculate($request)
     {
-        $energy_used = $counter_values_array[1] - $counter_values_array[0];
+        $request = $this->validate_calculate_request($request);
+        $energy_used = $request['current_counter'] - $request['previous_counter'];
+        $consumed_energy = $energy_used;
         $energy_cost = 0;
-        if($this->user_info->common_metric)
+        if($this->user_service_info->common_metric)
         {
-            if($this->user_info->common_metric_hostel)
+            if($this->user_service_info->common_metric_hostel)
             {
                 $energy_cost += $energy_used * self::COST_FIRST - self::calculate_relief_with_no_cost_change(self::COST_FIRST, $energy_used);
             }
@@ -368,11 +404,11 @@ class ElectricityKiyvEnergoService extends BasicService
                 $energy_cost += $energy_used * self::COST_SECOND - self::calculate_relief_with_no_cost_change(self::COST_SECOND, $energy_used);
             }
         }
-        elseif($this->user_info->child_support)
+        elseif($this->user_service_info->child_support)
         {
             $energy_cost += $energy_used * self::COST_FIRST - self::calculate_relief_with_no_cost_change(self::COST_FIRST, $energy_used);
         }
-        elseif($this->user_info->heat_supply)
+        elseif($this->user_service_info->heat_supply)
         {
             if($energy_used > self::MAX_THIRD)
             {
@@ -387,7 +423,7 @@ class ElectricityKiyvEnergoService extends BasicService
             $energy_cost -= self::calculate_relief_with_one_cost_change(self::MAX_THIRD, self::COST_FIRST, self::COST_THIRD, $energy_used);
 
         }
-        elseif($this->user_info->location)
+        elseif($this->user_service_info->location)
         {
             $energy_cost += self::calculate_location_cost(self::MAX_FIRST_CITY, self::MAX_SECOND, $energy_used) - self::calculate_relief_with_two_cost_change(self::MAX_FIRST_CITY, self::MAX_SECOND, $energy_used);
         }
@@ -395,12 +431,31 @@ class ElectricityKiyvEnergoService extends BasicService
         {
             $energy_cost += self::calculate_location_cost(self::MAX_FIRST_COUNTRYSIDE, self::MAX_SECOND, $energy_used) - self::calculate_relief_with_two_cost_change(self::MAX_FIRST_COUNTRYSIDE, self::MAX_SECOND, $energy_used);
         }
-        return $energy_cost / 100;
+        return $this->successful_calculate_layout(array($energy_cost / 100, $consumed_energy, $request['current_counter']));
     }
 
     public function successful_calculate_layout($calculate_values)
     {
-        // TODO: Implement successful_calculate_layout() method.
+        var_dump($calculate_values[0]);
+        $answer = '<div class="header">' . self::SERVICE_NAME . '</div>
+                    <div class="inline field">
+                        <div class="field">
+                            <label>Текущее значение счетчика</label>
+                            <input type="text" placeholder="Сумма" name="counter_value" value="' . $calculate_values[2] . '">
+                        </div>
+                   </div><div class="inline field">
+                        <div class="field">
+                            <label>Объемы использованного электричества</label>
+                            <input type="text" placeholder="Сумма" name="consumed_value" value="' . $calculate_values[1] . '">
+                        </div>
+                   </div>
+                   <div class="inline field">
+                        <div class="field">
+                            <label>Сумма счета</label>
+                            <input type="text" placeholder="Сумма" name="paid_value" value="' . $calculate_values[0] . '">
+                        </div>
+                   </div>';
+        return view('services/successful_calculate')->with(['result_form' => $answer]);
     }
 
     private function calculate_location_cost($max_first, $max_second, $energy_used)
@@ -430,37 +485,37 @@ class ElectricityKiyvEnergoService extends BasicService
     private function calculate_relief_with_two_cost_change($max_first, $max_second, $energy_used)
     {
         $relief_cost = 0;
-        if($this->user_info->num_of_relief_energy <= $max_first)
+        if($this->user_service_info->num_of_relief_energy <= $max_first)
         {
-            if($energy_used <= $this->user_info->num_of_relief_energy)
+            if($energy_used <= $this->user_service_info->num_of_relief_energy)
             {
-                $relief_cost = $energy_used * self::COST_FIRST * $this->user_info->relief;
+                $relief_cost = $energy_used * self::COST_FIRST * $this->user_service_info->relief;
             }
             else
             {
-                $relief_cost = $this->user_info->num_of_relief_energy * self::COST_FIRST * $this->user_info->relief;
+                $relief_cost = $this->user_service_info->num_of_relief_energy * self::COST_FIRST * $this->user_service_info->relief;
             }
         }
-        elseif($max_second < $this->user_info->num_of_relief_energy)
+        elseif($max_second < $this->user_service_info->num_of_relief_energy)
         {
-            if($energy_used <= $this->user_info->num_of_relief_energy)
+            if($energy_used <= $this->user_service_info->num_of_relief_energy)
             {
-                $relief_cost = self::calculate_location_cost($max_first, $max_second, $energy_used) * $this->user_info->relief;
+                $relief_cost = self::calculate_location_cost($max_first, $max_second, $energy_used) * $this->user_service_info->relief;
             }
             else
             {
-                $relief_cost = self::calculate_location_cost($max_first, $max_second, $this->user_info->num_of_relief_energy) * $this->user_info->relief;
+                $relief_cost = self::calculate_location_cost($max_first, $max_second, $this->user_service_info->num_of_relief_energy) * $this->user_service_info->relief;
             }
         }
         else
         {
-            if($energy_used <= $this->user_info->num_of_relief_energy)
+            if($energy_used <= $this->user_service_info->num_of_relief_energy)
             {
-                $relief_cost = ((($energy_used - $max_first < 0) ? $energy_used : $max_first) * self::COST_FIRST + (($energy_used - $max_first < 0) ? 0 : $energy_used - $max_first) * self::COST_SECOND) * $this->user_info->relief;
+                $relief_cost = ((($energy_used - $max_first < 0) ? $energy_used : $max_first) * self::COST_FIRST + (($energy_used - $max_first < 0) ? 0 : $energy_used - $max_first) * self::COST_SECOND) * $this->user_service_info->relief;
             }
             else
             {
-                $relief_cost = ($max_first * self::COST_FIRST + ($this->user_info->num_of_relief_energy - $max_first) * self::COST_SECOND) * $this->user_info->relief;
+                $relief_cost = ($max_first * self::COST_FIRST + ($this->user_service_info->num_of_relief_energy - $max_first) * self::COST_SECOND) * $this->user_service_info->relief;
             }
         }
         return $relief_cost;
@@ -468,27 +523,27 @@ class ElectricityKiyvEnergoService extends BasicService
     private function calculate_relief_with_one_cost_change($limit, $cost_before, $cost_after, $energy_used)
     {
         $relief_cost = 0;
-        if($this->user_info->num_of_relief_energy <= $limit)
+        if($this->user_service_info->num_of_relief_energy <= $limit)
         {
-            $relief_cost = (($energy_used <= $this->user_info->num_of_relief_energy) ? $energy_used : $this->user_info->num_of_relief_energy) * $cost_before * $this->user_info->relief;
+            $relief_cost = (($energy_used <= $this->user_service_info->num_of_relief_energy) ? $energy_used : $this->user_service_info->num_of_relief_energy) * $cost_before * $this->user_service_info->relief;
         }
         else
         {
             if($energy_used <= $limit)
             {
-                $relief_cost = $energy_used * $cost_before * $this->user_info->relief;
+                $relief_cost = $energy_used * $cost_before * $this->user_service_info->relief;
             }
             else
             {
-                $relief_cost = $limit * $cost_before * $this->user_info->relief;
-                $relief_cost += (($energy_used <= $this->user_info->num_of_relief_energy) ? $energy_used - $limit : $this->user_info->num_of_relief_energy - $limit) * $cost_after * $this->user_info->relief;
+                $relief_cost = $limit * $cost_before * $this->user_service_info->relief;
+                $relief_cost += (($energy_used <= $this->user_service_info->num_of_relief_energy) ? $energy_used - $limit : $this->user_service_info->num_of_relief_energy - $limit) * $cost_after * $this->user_service_info->relief;
             }
         }
         return $relief_cost;
     }
     private function calculate_relief_with_no_cost_change($cost, $energy_used)
     {
-        return (($energy_used <= $this->user_info->num_of_relief_energy) ? $energy_used : $this->user_info->num_of_relief_energy) * $cost * $this->user_info->relief;
+        return (($energy_used <= $this->user_service_info->num_of_relief_energy) ? $energy_used : $this->user_service_info->num_of_relief_energy) * $cost * $this->user_service_info->relief;
     }
 
     private function validate_info_request($request)
@@ -559,6 +614,28 @@ class ElectricityKiyvEnergoService extends BasicService
         }
         return $request;
 
+    }
+
+    private function validate_calculate_request($request)
+    {
+            if(array_key_exists('previous_counter', $request))
+            {
+                $request['previous_counter'] = (float)$request['previous_counter'];
+            }
+            else
+            {
+                $request['previous_counter'] = 0;
+            }
+            if(array_key_exists('current_counter', $request))
+            {
+                $request['current_counter'] = (float)$request['current_counter'];
+            }
+            else
+            {
+                $request['current_counter'] = 0;
+            }
+
+        return $request;
     }
 
 }

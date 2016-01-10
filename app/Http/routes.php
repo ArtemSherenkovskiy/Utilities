@@ -16,15 +16,7 @@ use App\Http\Services;
 Route::group(['middleware'=>'auth'],function(){
     Route::get('/a', ['as'=>'home','uses'=>'ServiceController@index']);
 
-    Route::get('/',  function () {
-        if(\Illuminate\Support\Facades\Auth::guest()) {
-            return view('auth/register-modal');
-        }
-        else
-        {
-            return redirect()->route('home');
-        }
-    });
+
 
 
     Route::get('/service{id?}', ['as' => 'service', 'uses' => 'ServiceController@getService']);
@@ -35,6 +27,15 @@ Route::group(['middleware'=>'auth'],function(){
     Route::get('edit/service{service_id}', ['as' => 'editService', 'uses' => 'ServiceController@editService']);
 
 });
+    Route::get('/',  function () {
+        if(\Illuminate\Support\Facades\Auth::guest()) {
+            return view('auth/register-modal');
+        }
+        else
+        {
+            return redirect()->route('home');
+        }
+    });
 
 // Authentication routes...
 

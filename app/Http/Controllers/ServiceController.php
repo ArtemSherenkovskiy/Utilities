@@ -127,7 +127,17 @@ class ServiceController extends Controller
     public function calculate(Request $request)
     {
         $this->service = Services\ServiceControl::generate($request->input('id'));
+        view()->share('service_id',$request->input('id'));
         return $this->service->calculate($request->input());
+    }
+    public function saveToHistory(Request $request)
+    {
+        $this->service = Services\ServiceControl::generate($request->input('id'));
+        $this->service->safe_history($request->input());
+        $home = route('home');
+        $answer = '<div class="ui message">Успешно сохранено</div><script>setTimeout(function () {
+    window.location.href = "'.$home.'";},2000);</script>';
+        return view('errors/message')->with(['message'=>$answer]);
     }
 
     /**

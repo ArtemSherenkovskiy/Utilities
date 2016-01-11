@@ -24,6 +24,7 @@ Route::group(['middleware'=>'auth'],function(){
     Route::get('/service/calculate{id?}', ['as' => 'beforeCalculate', 'uses' => 'ServiceController@beforeCalculate']);
     Route::post('service{id}/calculate/save', ['as' => 'calculate', 'uses' => 'ServiceController@calculate']);
     Route::post('service{id}/save', ['as' => 'saveService', 'uses' => 'ServiceController@store']);
+    Route::post('service{id}/history/save', ['as' => 'saveToHistory', 'uses' => 'ServiceController@saveToHistory']);
     Route::get('edit/service{service_id}', ['as' => 'editService', 'uses' => 'ServiceController@editService']);
 
 });

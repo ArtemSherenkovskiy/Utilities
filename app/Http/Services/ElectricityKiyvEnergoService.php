@@ -211,7 +211,7 @@ class ElectricityKiyvEnergoService extends BasicService
         {
             throw new ServiceException("Electricity KiyvEnergo, before_calculate_layout is null");
         }
-        var_dump($this->user_service_info);
+        //var_dump($this->user_service_info);
 
             $previous_time_period =  History::where('user_service_id', '=', $this->user_service_id)->max('time_period');
             if($previous_time_period == strtotime(date('Y-m-01 00:00:00')))

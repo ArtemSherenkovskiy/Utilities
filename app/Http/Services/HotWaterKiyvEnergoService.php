@@ -192,24 +192,32 @@ class HotWaterKiyvEnergoService extends BasicService
         {
             throw new ServiceException("Hot water KiyvEnergo, before_calculate_layout is null");
         }
-        var_dump($this->user_service_info);
         if($this->user_service_info->counter)
         {
-            $previous_time_period =  History::where('user_service_id', '=', $this->user_service_id)->max('time_period');
-            if($previous_time_period == strtotime(date('Y-m-01 00:00:00')))
-            {
-                // return message with warning that we have already calculate in this month
-            }
+            $previous_time_period =  History::whereRaw('user_service_id = ' . $this->user_service_id . " and time_period <> '" . date('Y-m-01 00:00:00') . "'")->max('time_period');
             if(null == $previous_time_period)
             {
                 $previous_counter = 0;
             }
             else {
-                $previous_history_element = History::whereRaw('user_service_id = ' . $this->user_service_id . ' and time_period = ' . $previous_time_period)->first();
+                $previous_history_element = History::whereRaw('user_service_id = ' . $this->user_service_id . " and time_period = '" . $previous_time_period . "'")->first();
                 if (null != $previous_history_element)
                 {
-                    $previous_counter = unserialize($previous_history_element->history_item)->counter;
+                    $previous_counter = unserialize($previous_history_element->history_item)->counter_value;
                 }
+            }
+            $current_time_period =  History::where('user_service_id', '=', $this->user_service_id)->max('time_period');
+            if($current_time_period == date('Y-m-01 00:00:00'))
+            {
+                $current_history_element = History::whereRaw('user_service_id = ' . $this->user_service_id . " and time_period = '" . date('Y-m-01 00:00:00') . "'")->first();
+                if(null != $current_history_element)
+                {
+                    $current_counter = unserialize($current_history_element->history_item)->counter_value;
+                }
+            }
+            else
+            {
+                $current_counter = $previous_counter;
             }
             $answer = ' <div class="header">' . self::SERVICE_NAME . '</div>
                         <div class="field">
@@ -218,14 +226,27 @@ class HotWaterKiyvEnergoService extends BasicService
                         </div>
                         <div class="field">
                             <label>Текущие показания счетчика</label>
-                            <input type="text" name="current_counter" value="' . $previous_counter . '">
+                            <input type="text" name="current_counter" value="' . $current_counter . '">
                         </div>';
         }
         else
         {
+            $current_time_period =  History::where('user_service_id', '=', $this->user_service_id)->max('time_period');
+            if($current_time_period == date('Y-m-01 00:00:00'))
+            {
+                $current_history_element = History::where([['user_service_id', '=', $this->user_service_id], ['time_period', '=', date('Y-m-01 00:00:00')]])->first();
+                if(null != $current_history_element)
+                {
+                    $current_counter = unserialize($current_history_element->history_item)->consumed_value;
+                }
+            }
+            else
+            {
+                $current_counter = 0;
+            }
             $answer = ' <div class="field">
                             <label>Количество использованной воды</label>
-                            <input type="text" name="water_volume" value="' . 0 . '">
+                            <input type="text" name="water_volume" value="' . $current_counter . '">
                         </div>';
         }
         return view('services/before_calculate')->with(['input_form' => $answer]);
@@ -354,12 +375,12 @@ class HotWaterKiyvEnergoService extends BasicService
     public function safe_history($request)
     {
         $history_item = new HotWaterKiyvEnergoMonthInfo($request['counter_value'], $request['consumed_value'], $request['paid_value']);
-        $time = strtotime(date('Y-m-01 00:00:00'));
-        if(History::whereRaw("user_service_id = $this->user_service_id and time_period = $time")->first())
+        $time = date('Y-m-01 00:00:00');
+        $history = History::whereRaw("user_service_id = $this->user_service_id and time_period = '$time'")->first();
+        if(null == $history)
         {
-            throw new ServiceException("Current month has been calculated");
+            $history = new History();
         }
-        $history = new History();
         $history->time_period = $time;
         $history->history_item = serialize($history_item);
         $history->user_service_id = $this->user_service_id;

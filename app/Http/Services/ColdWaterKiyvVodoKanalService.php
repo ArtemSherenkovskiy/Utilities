@@ -72,7 +72,7 @@ class ColdWaterKiyvVodoKanalMonthInfo
      * @var
      * value of cold water consumed
      */
-    public $water_consumed_value;
+    public $consumed_value;
 
     /**
      * @var
@@ -90,14 +90,14 @@ class ColdWaterKiyvVodoKanalMonthInfo
     /**
      * ColdWaterKiyvVodoKanalMonthInfo constructor.
      * @param $counter_value
-     * @param $water_consumed_value
+     * @param $consumed_value
      * @param $hot_water_outgoing_value
      * @param $paid_value
      */
-    public function __construct($counter_value = 0.0, $water_consumed_value = 0.0, $hot_water_outgoing_value = 0.0, $paid_value = 0.0)
+    public function __construct($counter_value = 0.0, $consumed_value = 0.0, $hot_water_outgoing_value = 0.0, $paid_value = 0.0)
     {
         $this->counter_value = $counter_value;
-        $this->water_consumed_value = $water_consumed_value;
+        $this->consumed_value = $consumed_value;
         $this->hot_water_outgoing_value = $hot_water_outgoing_value;
         $this->paid_value = $paid_value;
     }
@@ -238,7 +238,7 @@ class ColdWaterKiyvVodoKanalService extends BasicService
             $current_history_element = History::whereRaw("user_service_id = $this->user_service_id and time_period = '$time'")->max('time_period');
             if(null != $current_history_element)
             {
-                $consumed_value = unserialize($current_history_element->history_item)->water_consumed_value;
+                $consumed_value = unserialize($current_history_element->history_item)->consumed_value;
             }
             else
             {

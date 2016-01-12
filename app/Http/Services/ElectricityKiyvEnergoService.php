@@ -127,19 +127,19 @@ class ElectricityKiyvEnergoMonthInfo
      * @var
      * value of energy consumed that month
      */
-    public $energy_consumed_value;
+    public $consumed_value;
 
     /**
      * ElectricityKiyvEnergoMonthInfo constructor.
      * @param $counter_value
      * @param $paid_value
-     * @param $energy_consumed_value
+     * @param $consumed_value
      */
-    public function __construct($counter_value, $paid_value, $energy_consumed_value)
+    public function __construct($counter_value, $paid_value, $consumed_value)
     {
         $this->counter_value = $counter_value;
         $this->paid_value = $paid_value;
-        $this->energy_consumed_value = $energy_consumed_value;
+        $this->consumed_value = $consumed_value;
     }
 
 
@@ -212,33 +212,36 @@ class ElectricityKiyvEnergoService extends BasicService
             throw new ServiceException("Electricity KiyvEnergo, before_calculate_layout is null");
         }
         //var_dump($this->user_service_info);
+        $previous_time_period =  History::whereRaw('user_service_id = ' . $this->user_service_id . " and time_period <> '" . date('Y-m-01 00:00:00') . "'")->max('time_period');
+        if(null == $previous_time_period)
+        {
+            $previous_counter = 0;
+        }
+        else {
+            $previous_history_element = History::whereRaw('user_service_id = ' . $this->user_service_id . " and time_period = '" . $previous_time_period . "'")->first();
 
-            $previous_time_period =  History::where('user_service_id', '=', $this->user_service_id)->max('time_period');
-            if($previous_time_period == strtotime(date('Y-m-01 00:00:00')))
+                $previous_counter = unserialize($previous_history_element->history_item)->counter_value;
+        }
+
+            $current_history_element = History::whereRaw('user_service_id = ' . $this->user_service_id . " and time_period = '" . date('Y-m-01 00:00:00') . "'")->first();
+            if(null != $current_history_element)
             {
-                // return message with warning that we have already calculate in this month
+                $current_counter = unserialize($current_history_element->history_item)->counter_value;
             }
-            if(null == $previous_time_period)
-            {
-                $previous_counter = 0;
-            }
-            else {
-                $previous_history_element = History::whereRaw('user_service_id = ' . $this->user_service_id . ' and time_period = ' . $previous_time_period)->first();
-                if (null != $previous_history_element)
-                {
-                    $previous_counter = unserialize($previous_history_element->history_item)->counter;
-                }
-            }
-            $answer = ' <div class="header">' . self::SERVICE_NAME . '</div>
+
+        else
+        {
+            $current_counter = $previous_counter;
+        }
+        $answer = ' <div class="header">' . self::SERVICE_NAME . '</div>
                         <div class="field">
                             <label>Показания счетчика в прошлом месяце</label>
                             <input type="text" name="previous_counter" value="' . $previous_counter . '">
                         </div>
                         <div class="field">
                             <label>Текущие показания счетчика</label>
-                            <input type="text" name="current_counter" value="' . $previous_counter . '">
+                            <input type="text" name="current_counter" value="' . $current_counter . '">
                         </div>';
-
         return view('services/before_calculate')->with(['input_form' => $answer]);
     }
 
@@ -288,10 +291,12 @@ class ElectricityKiyvEnergoService extends BasicService
             </div>
             <div class="two fields">
             <div class="field">
+             <label>Скидка</label>
              <input type="text" placeholder="Размер скидки в %" name="relief">
              </div>
             <div class="field">
-            <input type="text" placeholder="Объем льготной воды в куб.м" name="num_of_relief_energy">
+                <label>Объкмы льготной воды</label>
+                <input type="text" placeholder="Объем льготной воды в куб.м" name="num_of_relief_energy">
             </div>
             </div>';
         return view('services/create_service')->with(['layout'=> $answer, 'id' => $this->service_id]);
@@ -338,10 +343,12 @@ class ElectricityKiyvEnergoService extends BasicService
             </div>
             <div class="two fields">
             <div class="field">
-             <input type="text" placeholder="Размер скидки в %" name="relief" value="' . $this->user_service_info->relief * 100 . '">
+                <label>Скидка</label>
+                <input type="text" placeholder="Размер скидки в %" name="relief" value="' . $this->user_service_info->relief * 100 . '">
              </div>
             <div class="field">
-            <input type="text" placeholder="Объем льготной воды в куб.м" name="num_of_relief_energy" value="' . $this->user_service_info->num_of_relief_energy . '">
+                <label>Объкмы льготной воды</label>
+                <input type="text" placeholder="Объем льготной воды в куб.м" name="num_of_relief_energy" value="' . $this->user_service_info->num_of_relief_energy . '">
             </div>
             </div>';
         return view('services/create_service')->with(['layout'=> $answer, 'id' => $this->service_id]);
@@ -383,8 +390,17 @@ class ElectricityKiyvEnergoService extends BasicService
 
     public function safe_history($request)
     {
-        // TODO: Implement safe_history() method.
-    }
+        $history_item = new ElectricityKiyvEnergoMonthInfo($request['counter_value'], $request['consumed_value'], $request['paid_value']);
+        $time = date('Y-m-01 00:00:00');
+        $history = History::whereRaw("user_service_id = $this->user_service_id and time_period = '$time'")->first();
+        if(null == $history)
+        {
+            $history = new History();
+            $history->user_service_id = $this->user_service_id;
+            $history->time_period = $time;
+        }
+        $history->history_item = serialize($history_item);
+        $history->save();}
 
 
     public function calculate($request)

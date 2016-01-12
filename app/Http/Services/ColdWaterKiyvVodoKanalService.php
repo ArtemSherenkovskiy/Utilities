@@ -8,6 +8,8 @@
 
 namespace App\Http\Services;
 
+include 'HotWaterKiyvEnergoService.php';
+
 use App\UserService;
 use App\History;
 use App\Service;
@@ -92,7 +94,7 @@ class ColdWaterKiyvVodoKanalMonthInfo
      * @param $hot_water_outgoing_value
      * @param $paid_value
      */
-    public function __construct1($counter_value, $water_consumed_value, $hot_water_outgoing_value, $paid_value)
+    public function __construct($counter_value = 0.0, $water_consumed_value = 0.0, $hot_water_outgoing_value = 0.0, $paid_value = 0.0)
     {
         $this->counter_value = $counter_value;
         $this->water_consumed_value = $water_consumed_value;
@@ -101,13 +103,7 @@ class ColdWaterKiyvVodoKanalMonthInfo
     }
 
 
-    public function __construct()
-    {
-        $this->counter_value = 0.0;
-        $this->water_consumed_value = 0.0;
-        $this->hot_water_outgoing_value = 0.0;
-        $this->paid_value = 0.0;
-    }
+
 
 
 }
@@ -169,7 +165,7 @@ class ColdWaterKiyvVodoKanalService extends BasicService
         $current_hot_water = 0;
         if($this->user_service_info->hot_water_vendor != 0)
         {
-            $hot_water_service = Service::whereRaw('vendor_id = '. $this->user_service_info->hot_water_vendor . ' and service_alias = ' . self::SERVICE_ALIAS)->first();
+            $hot_water_service = Service::whereRaw('vendor_id = '. $this->user_service_info->hot_water_vendor . " and service_alias = '" . self::HOT_WATER_ALIAS . "'")->first();
             if(null == $hot_water_service)
             {
                 throw new ServiceException('Cold water KiyvVodoKanal, unknown hot water service');
@@ -183,24 +179,27 @@ class ColdWaterKiyvVodoKanalService extends BasicService
                 throw new ServiceException('Cold water KiyvVodoKanal, unknown hot water user_service');
             }
             $hot_water_user_service_id = $hot_water_user_service->id;
-            $time = strtotime(date('Y-m-01 00:00:00'));
-            $hot_water_history = History::whereRaw('user_service_id = ' . $hot_water_user_service_id . 'and time_period = ' . $time)->first();
+
+            $time = date('Y-m-01 00:00:00');
+            $hot_water_history = History::whereRaw("user_service_id =  $hot_water_user_service_id and time_period = '$time'")->first();
             if(null == $hot_water_history)
             {
+                var_dump('fuck');
                 //create layout that user need to calculate hot water firstly
             }
-            elseif(count($hot_water_history) == 1)
+            else
             {
-                $current_hot_water = $hot_water_history->consumed_value;
+                $current_hot_water = unserialize($hot_water_history->history_item);
+                $current_hot_water = $current_hot_water->consumed_value;
             }
+            var_dump($time);
+            var_dump($hot_water_user_service_id);
+            var_dump($current_hot_water);
         }
         if($this->user_service_info->counter)
         {
-            $previous_time_period =  History::where('user_service_id', '=', $this->user_service_id)->max('time_period');
-            if($previous_time_period == strtotime(date('Y-m-01 00:00:00')))
-            {
-                // return message with warning that we have already calculate in this month
-            }
+            $time = date('Y-m-01 00:00:00');
+            $previous_time_period =  History::whereRaw("user_service_id = $this->user_service_id and time_period <> '$time'")->max('time_period');
             if(null == $previous_time_period)
             {
                 $previous_counter = 0;
@@ -212,13 +211,22 @@ class ColdWaterKiyvVodoKanalService extends BasicService
                     $previous_counter = unserialize($previous_history_element->history_item)->counter;
                 }
             }
+            $current_history_element = History::whereRaw("user_service_id = $this->user_service_id and time_period = '$time'")->first();
+            if(null != $current_history_element)
+            {
+                $current_counter = unserialize($current_history_element->history_item)->counter_value;
+            }
+            else
+            {
+                $current_counter = $previous_counter;
+            }
             $answer = ' <div class="field">
                             <label>Показания счетчика в прошлом месяце</label>
                             <input type="text" name="previous_counter" value="' . $previous_counter . '">
                         </div>
                         <div class="field">
                             <label>Текущие показания счетчика</label>
-                            <input type="text" name="current_counter" value="' . $previous_counter . '">
+                            <input type="text" name="current_counter" value="' . $current_counter . '">
                         </div>
                         <div class="field">
                             <label>Использовано горячей воды:</label>
@@ -227,9 +235,18 @@ class ColdWaterKiyvVodoKanalService extends BasicService
         }
         else
         {
+            $current_history_element = History::whereRaw("user_service_id = $this->user_service_id and time_period = '$time'")->max('time_period');
+            if(null != $current_history_element)
+            {
+                $consumed_value = unserialize($current_history_element->history_item)->water_consumed_value;
+            }
+            else
+            {
+                $consumed_value = 0;
+            }
             $answer = ' <div class="field">
                             <label>Количество использованной воды</label>
-                            <input type="text" name="water_volume" value="' . 0 . '">
+                            <input type="text" name="water_volume" value="' . $consumed_value . '">
                         </div>
                         <div class="field">
                             <label>Использовано горячей воды:</label>
@@ -346,16 +363,16 @@ class ColdWaterKiyvVodoKanalService extends BasicService
 
     public function safe_history($request)
     {
-        $history_item = new ColdWaterKiyvVodoKanalMonthInfo($request['counter_value'], $request['water_consumed'], $request['hot_water_outgoing'], $request['paid_value']);
-        $time = strtotime(date('Y-m-01 00:00:00'));
-        if(History::whereRaw("user_service_id = $this->user_service_id and time_period = $time")->first())
+        $history_item = new ColdWaterKiyvVodoKanalMonthInfo($request['counter_value'], $request['consumed_value'], $request['hot_water_outgoing'], $request['paid_value']);
+        $time = date('Y-m-01 00:00:00');
+        $history = History::whereRaw("user_service_id = $this->user_service_id and time_period = '$time'")->first();
+        if(null == $history)
         {
-            throw new ServiceException("Current month has been calculated");
+            $history = new History();
+            $history->time_period = $time;
+            $history->user_service_id = $this->user_service_id;
         }
-        $history = new History();
-        $history->time_period = $time;
         $history->history_item = serialize($history_item);
-        $history->user_service_id = $this->user_service_id;
         $history->save();
     }
 
@@ -383,7 +400,7 @@ class ColdWaterKiyvVodoKanalService extends BasicService
         $num_of_relief_hot_water = 0.0;
         if($this->user_service_info->hot_water_vendor != 0)
         {
-            $hot_water_service = Service::whereRaw('vendor_id = ' . $this->user_service_info->hot_water_vendor . ' and service_alias = ' . self::SERVICE_ALIAS)->first();
+            $hot_water_service = Service::whereRaw("vendor_id = " . $this->user_service_info->hot_water_vendor . " and service_alias = '" . self::HOT_WATER_ALIAS . "'")->first();
             if (null == $hot_water_service) {
                 throw new ServiceException('Cold water KiyvVodoKanal, unknown hot water service');
             }

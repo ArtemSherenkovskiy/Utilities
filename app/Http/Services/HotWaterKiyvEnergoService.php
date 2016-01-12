@@ -380,10 +380,10 @@ class HotWaterKiyvEnergoService extends BasicService
         if(null == $history)
         {
             $history = new History();
+            $history->user_service_id = $this->user_service_id;
+            $history->time_period = $time;
         }
-        $history->time_period = $time;
         $history->history_item = serialize($history_item);
-        $history->user_service_id = $this->user_service_id;
         $history->save();
     }
 
